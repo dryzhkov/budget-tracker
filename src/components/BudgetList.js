@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
 
 import Transaction from './Transaction';
 import EditTransaction from './EditTransaction';
@@ -17,7 +19,8 @@ class BudgetList extends Component {
         totalIncome: 0,
         totalExpense: 0,
         totalSaving: 0
-      } 
+      },
+      payDate: Utils.getCurrentPayDate()
     };
 
     this.handleSelect = this.handleSelect.bind(this);
@@ -26,10 +29,8 @@ class BudgetList extends Component {
     this.handleDelete = this.handleDelete.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleEnableAddMode = this.handleEnableAddMode.bind(this);
-
-    console.log(Utils.getCurrentPayDate());
-    console.log(Utils.formatPayDate({year: 2017, period: 23}));
   }
+
   componentDidMount() {
     TransactionRepo.get()
       .then(result => {
@@ -129,11 +130,14 @@ class BudgetList extends Component {
     });
   }
 
-
-
   render() {
+    const payDateFormatted = Utils.formatPayDate(this.state.payDate);
     return (
       <div className="budgetwrapper">
+        <DropDownMenu maxHeight={300} value={payDateFormatted} onChange={this.handleDateChange} 
+          style={{fontWeight:'bold', fontSize:'20px'}} menuStyle={{backgroundColor:'#fafafa'}} menuItemStyle={{color:'#FFF'}}>
+          <MenuItem value={payDateFormatted} primaryText={payDateFormatted}/>
+        </DropDownMenu>
         <div className="transaction-groups">
           <h2 className="totalheader">Income</h2>
           <div className="total income-text">{Utils.formatAsCurrency(this.state.budget.totalIncome)}</div>
