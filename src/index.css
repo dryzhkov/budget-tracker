@@ -1,0 +1,177 @@
+/* You can add global styles to this file, and also import other style files */
+* {
+  font-family: "Comic Sans MS";
+}
+
+h2 {
+  color: #fafafa;
+  font-weight: lighter;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 2em;
+  color: #B5D9EC;
+
+  background: #7d7e7d; /* Old browsers */
+  background: -webkit-linear-gradient(top, #7d7e7d 0%,#0e0e0e 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom, #7d7e7d 0%,#0e0e0e 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}
+
+body,
+input[text],
+button {
+  color: #B5D9EC;
+}
+
+button {
+  font-size: 20px;
+  background: transparent;
+  border: 1px solid;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  cursor: hand;
+}
+button:hover {
+  background-color: #7d7e7d;
+}
+button.delete-button {
+  background-color: #d83b01 !important;
+  color: white;
+  padding: 4px;
+  position: relative;
+  font-size: 12px;
+  margin-left: 1em;
+}
+
+div {
+  margin: .1em;
+}
+
+.selected {
+  background-color: #B5D9EC !important;
+  color: #FAFAFA;
+}
+
+.transactions {
+  float: left;
+  margin: 0 0 2em 0;
+  list-style-type: none;
+  padding: 0;
+}
+.transactions li {
+  cursor: pointer;
+  position: relative;
+  left: 0;
+  margin: .5em;
+  padding: .5em;
+  height: 2.0em;
+  border-radius: 4px;
+  width: 20em;
+}
+.transactions li:hover {
+  color: #0078d7;
+  background-color: #ddd;
+  left: .1em;
+}
+.transactions li.selected:hover {
+  /*background-color: #BBD8DC !important;*/
+  color: #FAFAFA;
+}
+.transactions .text {
+  position: relative;
+  top: -3px;
+}
+.transactions .amount {
+  margin: 5px 0;
+  float:right;
+}
+.transactions .category {
+  font-weight: bold;
+  overflow: hidden;
+  float: left;
+}
+.header-bar {
+  background-color: #B5D9EC;
+  height: 4px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+label {
+  display: inline-block;
+  width: 4em;
+  margin: .5em;
+}
+label.value {
+  margin-left: 10px;
+  font-size: 14px;
+}
+input {
+  height: 2em;
+  font-size: 1em;
+  padding-left: .4em;
+}
+input::placeholder {
+  color: lightgray;
+  font-weight: normal;
+  font-size: 12px;
+  letter-spacing: 3px;
+}
+
+.editarea {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+}
+.editarea input {
+  margin: 10px;
+  height: 20px;
+  color: #0078d7;
+}
+.editarea button {
+  margin: 8px;
+}
+.editarea .editfields {
+  margin-left: 12px;
+}
+.transaction-groups {
+  overflow: hidden;
+  width: 22em;
+}
+.transaction-groups .total{
+  float: right;
+  margin-top: 1.6em;
+  margin-right: 0.5em;
+  font-size:18px;
+}
+.transaction-groups .totalheader{
+  float: left;
+}
+.balance-area {
+  border-top: 3px dashed #fafafa;
+}
+.budgetwrapper {
+  width: 80%;
+  margin: auto;
+  position: relative;
+}
+.expense-text {
+  color:#f44336;
+  font-weight: bold;
+}
+.income-text{
+  color:#4CAF50;
+  font-weight: bold;
+}
+.saving-text{
+  color:#ff9800;
+  font-weight: bold;
+}
+.balance-text{
+  color:#2196F3;
+  font-weight: bold;
+}
