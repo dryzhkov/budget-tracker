@@ -16,15 +16,17 @@ class MessageBar extends React.Component {
   }
 
   getStyle(type) {
+    const style = {
+      textAlign: 'center'
+    };
+
     if (type === 'success') {
-      return {
-        backgroundColor: '#4CAF50'
-      };
+      style.backgroundColor = '#4CAF50';
     } else if (type === 'error') {
-      return {
-        backgroundColor: '#f44336'
-      };
+      style.backgroundColor = '#f44336';
     }
+
+    return style;
   }
 
   render() {
