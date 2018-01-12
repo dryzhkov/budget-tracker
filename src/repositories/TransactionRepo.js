@@ -1,9 +1,9 @@
 const baseAPI = '/api';
 
 const TransactionRepo = {
-  get() {
+  get(payDate) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/transactions`)
+      fetch(`${baseAPI}/transactions/${payDate.toString()}`)
         .then(response => response.json())
         .then(json => resolve(json))
         .catch(err => {

@@ -1,5 +1,19 @@
 import * as moment from 'moment';
 
+function PayDate(year, period) {
+  this.year = year;
+  this.period = period;
+}
+
+PayDate.prototype.toString = function () {
+  return `${this.year}-${this.period}`;
+}
+
+function stringToPayDate(value) {
+  const pieces = value.split('-');
+  return new PayDate(pieces[0], pieces[1]);
+}
+
 function calculateBudget(transactions) {
   let incomeSum = 0, expenseSum = 0, savingSum = 0;
 
@@ -38,10 +52,7 @@ function getCurrentPayDate() {
   let year = currentDate.year();
   let period = Math.ceil(2 * currentDate.month()) + Math.ceil(dayOfMonth / 15); // 15 is because of semi-monthly pay periods
 
-  return {
-    year,
-    period
-  };
+  return new PayDate(year, period);
 }
 
 function formatPayDate(payDate) {
@@ -61,5 +72,6 @@ export {
   calculateBudget,
   formatAsCurrency,
   formatPayDate,
-  getCurrentPayDate
+  getCurrentPayDate,
+  stringToPayDate
 };

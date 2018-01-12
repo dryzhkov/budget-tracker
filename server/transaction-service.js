@@ -4,12 +4,16 @@ const ReadPreference = require('mongodb').ReadPreference;
 require('./mongo').connect();
 
 function get(req, res) {
-  const docquery = Transaction.find({}).read(ReadPreference.NEAREST);
+  const { paydate } = req.params;
+  const docquery = Transaction.find({payDate: paydate}).read(ReadPreference.NEAREST);
 
   docquery
     .exec()
     .then(transactions => {
-      res.json(transactions);
+      const convertedTrans = transactions.map(el => {
+        return convert(el);
+      });
+      res.json(convertedTrans);
     })
     .catch(err => {
       res.status(500).send(err);
@@ -17,13 +21,14 @@ function get(req, res) {
 }
 
 function create(req, res) {
-  const { type, amount, category } = req.body;
+  const { type, amount, category, payDate } = req.body;
   const transaction = new Transaction(
     { 
-      id: Date.now(), 
+      id: Date.now(),
       type, 
       category, 
       amount,
+      payDate: `${payDate.year}-${payDate.period}`,
       created: new Date().toISOString()
     });
 
@@ -62,6 +67,31 @@ function destroy(req, res) {
     .catch(err => {
       res.status(500).send(err);
     });
+}
+
+function convert(dbElement) {
+  return {
+    id: dbElement.id,
+    type: dbElement.type,
+    category: dbElement.category,
+    amount: dbElement.amount,
+    payDate: stringToPayDate(dbElement.payDate),
+    userId: dbElement.userId,
+    created: dbElement.created
+  };
+}
+
+function stringToPayDate(value) {
+  if (value) {
+    const pieces = value.split('-');
+    if (pieces.length === 2) {
+      return {
+        year: pieces[0],
+        period: pieces[1]
+      };
+    }
+  }
+  return null;
 }
 
 module.exports = { get, create, update, destroy };

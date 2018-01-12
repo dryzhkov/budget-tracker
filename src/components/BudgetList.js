@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
+import Snackbar from 'material-ui/Snackbar';
 
 import Transaction from './Transaction';
 import EditTransaction from './EditTransaction';
+import PayDatePicker from './PayDatePicker';
 import * as Utils from '../common/Utils';
 import TransactionRepo from '../repositories/TransactionRepo';
 
 class BudgetList extends Component {
-
   constructor() {
     super();
 
-    this.state = { 
+    this.state = {
       transactions: [], 
       addingNew: false,
       budget: {
@@ -20,7 +21,7 @@ class BudgetList extends Component {
         totalExpense: 0,
         totalSaving: 0
       },
-      payDate: Utils.getCurrentPayDate()
+      selectedPayDate: Utils.getCurrentPayDate() 
     };
 
     this.handleSelect = this.handleSelect.bind(this);
@@ -29,12 +30,16 @@ class BudgetList extends Component {
     this.handleDelete = this.handleDelete.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleEnableAddMode = this.handleEnableAddMode.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
   }
 
   componentDidMount() {
-    TransactionRepo.get()
+    this.fetchTransactions(this.state.selectedPayDate);
+  }
+
+  fetchTransactions(payDate) {
+    TransactionRepo.get(payDate)
       .then(result => {
-        
         this.setState({ transactions: result, budget: Utils.calculateBudget(result)});
       });
   }
@@ -66,10 +71,13 @@ class BudgetList extends Component {
     let transactions = this.state.transactions;
 
     if (this.state.addingNew) {
-      TransactionRepo
-        .create(this.state.selectedTransaction)
-        .then(result => {
+      const transaction = Object.assign({
+        payDate: this.state.selectedPayDate
+      }, this.state.selectedTransaction);
 
+      TransactionRepo
+        .create(transaction)
+        .then(result => {
           transactions.push(result);
 
           let budget = Utils.calculateBudget(transactions);
@@ -130,14 +138,20 @@ class BudgetList extends Component {
     });
   }
 
+  handleDateChange(value) {
+    if (value !== this.state.selectedPayDate) {
+      this.setState({
+        selectedPayDate: value
+      });
+
+      this.fetchTransactions(value);
+    }
+  }
+
   render() {
-    const payDateFormatted = Utils.formatPayDate(this.state.payDate);
     return (
       <div className="budgetwrapper">
-        <DropDownMenu maxHeight={300} value={payDateFormatted} onChange={this.handleDateChange} 
-          style={{fontWeight:'bold', fontSize:'20px'}} menuStyle={{backgroundColor:'#fafafa'}} menuItemStyle={{color:'#FFF'}}>
-          <MenuItem value={payDateFormatted} primaryText={payDateFormatted}/>
-        </DropDownMenu>
+        <PayDatePicker onChange={this.handleDateChange} />
         <div className="transaction-groups">
           <h2 className="totalheader">Income</h2>
           <div className="total income-text">{Utils.formatAsCurrency(this.state.budget.totalIncome)}</div>
@@ -182,6 +196,12 @@ class BudgetList extends Component {
             onCancel={this.handleCancel}
           />
         </div>
+        <Snackbar
+          open={this.state.open}
+          message="Event added to your calendar"
+          autoHideDuration={4000}
+          onRequestClose={this.handleRequestClose}
+        />
       </div>
     );
   }

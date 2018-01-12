@@ -3,7 +3,7 @@ var router = express.Router();
 
 const transactionService = require('../transaction-service');
 
-router.get('/transactions', function(req, res, next) {
+router.get('/transactions/:paydate', function(req, res, next) {
   transactionService.get(req, res);
 });
 
