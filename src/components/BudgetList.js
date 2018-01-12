@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItem from 'material-ui/MenuItem';
-import Snackbar from 'material-ui/Snackbar';
 
 import Transaction from './Transaction';
 import EditTransaction from './EditTransaction';
 import PayDatePicker from './PayDatePicker';
+import MessageBar from './MessageBar';
 import * as Utils from '../common/Utils';
 import TransactionRepo from '../repositories/TransactionRepo';
 
@@ -31,6 +29,7 @@ class BudgetList extends Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.handleEnableAddMode = this.handleEnableAddMode.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
+    this.closeMessageBar = this.closeMessageBar.bind(this);
   }
 
   componentDidMount() {
@@ -69,7 +68,6 @@ class BudgetList extends Component {
 
   handleSave() {
     let transactions = this.state.transactions;
-
     if (this.state.addingNew) {
       const transaction = Object.assign({
         payDate: this.state.selectedPayDate
@@ -87,8 +85,11 @@ class BudgetList extends Component {
             addingNew: false,
             budget: budget
           });
+
+          this.displayMessage('Transaction has been saved!', 'success');
         })
         .catch(err => {
+          this.displayMessage('Unable to save.', 'error');
           console.log(err);
         });
     } else {
@@ -97,8 +98,12 @@ class BudgetList extends Component {
         .then(() => {
           let budget = Utils.calculateBudget(this.state.transactions);
           this.setState({ selectedTransaction: null, budget });
+          this.displayMessage('Updated!', 'success');
         })
-        .catch(err => {});
+        .catch(err => {
+          this.displayMessage('Unable to update.', 'error');
+          console.log(err);
+        });
     }
   }
 
@@ -148,6 +153,22 @@ class BudgetList extends Component {
     }
   }
 
+  closeMessageBar() {
+    this.setState({
+      showMessageBar: false,
+      messageText: null
+    })
+  }
+
+  displayMessage(msg, type) {
+    this.setState({
+      showMessageBar: true,
+      messageText: msg,
+      messageType: type
+    });
+  }
+
+
   render() {
     return (
       <div className="budgetwrapper">
@@ -196,12 +217,13 @@ class BudgetList extends Component {
             onCancel={this.handleCancel}
           />
         </div>
-        <Snackbar
-          open={this.state.open}
-          message="Event added to your calendar"
-          autoHideDuration={4000}
-          onRequestClose={this.handleRequestClose}
-        />
+        
+        <MessageBar 
+          open={this.state.showMessageBar}
+          message={this.state.messageText}
+          type={this.state.messageType}
+          requestClose={this.closeMessageBar}
+          />
       </div>
     );
   }
