@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const EditTransaction = (props) => {
   if (props.selectedTransaction) {
@@ -46,5 +47,14 @@ const EditTransaction = (props) => {
     return <div></div>;
   }
 };
+
+EditTransaction.propTypes = {
+  selectedTransaction: PropTypes.shape({
+    id: PropTypes.number,
+    type: PropTypes.string,
+    category: PropTypes.string,
+    amount: PropTypes.number
+  })
+}
 
 export default EditTransaction;

@@ -19,7 +19,9 @@ class BudgetList extends Component {
         totalExpense: 0,
         totalSaving: 0
       },
-      selectedPayDate: Utils.getCurrentPayDate() 
+      selectedPayDate: Utils.getCurrentPayDate(),
+      messageText: '',
+      showMessageBar: false
     };
 
     this.handleSelect = this.handleSelect.bind(this);
@@ -40,6 +42,7 @@ class BudgetList extends Component {
     TransactionRepo.get(payDate)
       .then(result => {
         this.setState({ transactions: result, budget: Utils.calculateBudget(result)});
+        this.displayMessage('Displaying budget for ' + Utils.formatPayDate(payDate), 'success');
       });
   }
 
@@ -54,15 +57,22 @@ class BudgetList extends Component {
   }
 
   handleOnChange(event) {
+    let eventName = event.target.name;
+    let eventValue = event.target.value;
+    
+    if (eventName === 'amount') {
+      eventValue = Number.parseFloat(eventValue);
+    }
+
     let selectedTransaction = this.state.selectedTransaction;
-    selectedTransaction[event.target.name] = event.target.value;
+    selectedTransaction[eventName] = eventValue;
     this.setState({ selectedTransaction: selectedTransaction });
   }
 
   handleEnableAddMode(type) {
     this.setState({
       addingNew: true,
-      selectedTransaction: { id: 0, type: type, amount: 0 }
+      selectedTransaction: { id: 0, type: type, amount: 0, category: '' }
     });
   }
 
@@ -123,7 +133,7 @@ class BudgetList extends Component {
           budget
         });
 
-        if (this.state.selectedTransaction.id === transaction.id) {
+        if (this.state.selectedTransaction && this.state.selectedTransaction.id === transaction.id) {
           this.setState({selectedTransaction: null});
         }
       })
@@ -156,7 +166,7 @@ class BudgetList extends Component {
   closeMessageBar() {
     this.setState({
       showMessageBar: false,
-      messageText: null
+      messageText: ''
     })
   }
 
