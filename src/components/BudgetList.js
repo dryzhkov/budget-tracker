@@ -182,7 +182,9 @@ class BudgetList extends Component {
   render() {
     return (
       <div className="budgetwrapper">
-        <PayDatePicker onChange={this.handleDateChange} />
+        <div className="pickerwrapper"> 
+          <PayDatePicker onChange={this.handleDateChange} />
+        </div>
         <div className="transaction-groups">
           <h2 className="totalheader">Income</h2>
           <div className="total income-text">{Utils.formatAsCurrency(this.state.budget.totalIncome)}</div>
