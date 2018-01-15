@@ -23,6 +23,7 @@ const EditTransaction = (props) => {
           <div>
             <label>Category: </label>
             <input
+              type="text"
               name="category"
               value={props.selectedTransaction.category}
               placeholder="ex: salary"
@@ -33,6 +34,7 @@ const EditTransaction = (props) => {
             <label>Amount: </label>
             <input
               name="amount"
+              type="number"
               value={props.selectedTransaction.amount}
               placeholder="amount"
               onChange={props.onChange}
