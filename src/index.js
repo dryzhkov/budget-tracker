@@ -1,22 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import { BrowserRouter, Route } from 'react-router-dom';
 import registerServiceWorker from './registerServiceWorker';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import './index.css';
+import App from './components/App';
+import BudgetList from './components/BudgetList';
 
-setup();
+setupGlobals();
 
 const ThemedApp = () => (
   <MuiThemeProvider>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </MuiThemeProvider>
 );
 
 ReactDOM.render(<ThemedApp />, document.getElementById('root'));
 registerServiceWorker();
 
-function setup() {
+function setupGlobals() {
   /**
    * Number.prototype.format(n, x)
    * 

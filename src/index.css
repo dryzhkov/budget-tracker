@@ -185,3 +185,41 @@ input::placeholder {
 .pickerwrapper {
   margin-bottom:2em;
 }
+
+nav {
+  float: right;
+  margin-top: -3.4em;
+  font-size: 20px;
+}
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: none;
+}
+
+nav li {
+  float: left;
+  border-right: 1px solid #B5D9EC;
+}
+
+nav li:last-child {
+  border-right: none;
+}
+
+nav li a {
+  display: block;
+  color: #B5D9EC;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+nav li a:hover:not(.active) {
+  background-color: #7d7e7d;
+}
+
+nav .active {
+  background-color: #4CAF50;
+}
