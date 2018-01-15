@@ -219,7 +219,3 @@ nav li a {
 nav li a:hover:not(.active) {
   background-color: #7d7e7d;
 }
-
-nav .active {
-  background-color: #4CAF50;
-}

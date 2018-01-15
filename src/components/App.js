@@ -12,7 +12,7 @@ const App = () => {
       <Header />
       <Switch>
         <Route exact path="/" component={BudgetList} />
-        <Route path="/summary" component={Summary} />
+        <Route path="/summary/:year" component={Summary} />
       </Switch>
     </div>
   );

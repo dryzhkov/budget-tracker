@@ -58,11 +58,33 @@ function update(req, res) {
 }
 
 function destroy(req, res) {
-  const { id } = req.params;
+  const id = Number.parseInt(req.params.id);
+
+  if (!Number.isFinite(id)) {
+    res.status(400).send('invalid request param.')
+  } 
 
   Transaction.findOneAndRemove({ id })
     .then(transaction => {
       res.json(transaction);
+    })
+    .catch(err => {
+      res.status(500).send(err);
+    });
+}
+
+function getAll(req, res) {
+  const year = Number.parseInt(req.params.year);
+
+  console.log("[" + year + "]");
+
+  if (!Number.isInteger(year)) {
+    res.status(400).send('invalid request param.')
+  }
+
+  Transaction.find({'payDate' : {$regex : `${year}-.*`}})
+    .then(transactions => {
+      res.json(transactions);
     })
     .catch(err => {
       res.status(500).send(err);
@@ -94,4 +116,4 @@ function stringToPayDate(value) {
   return null;
 }
 
-module.exports = { get, create, update, destroy };
+module.exports = { get, create, update, destroy, getAll };

@@ -58,6 +58,17 @@ const TransactionRepo = {
           reject(err);
         });
     });
+  },
+
+  getAll(year) {
+    return new Promise((resolve, reject) => {
+      fetch(`${baseAPI}/transactions/summary/${year}`, { method: 'GET'})
+        .then(response => response.json())
+        .then(json => resolve(json))
+        .catch(err => {
+          reject(err);
+        });
+    });
   }
 };
 

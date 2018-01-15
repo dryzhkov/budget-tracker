@@ -19,4 +19,8 @@ router.delete('/transaction/:id', (req, res) => {
   transactionService.destroy(req, res);
 });
 
+router.get('/transactions/summary/:year', (req, res) => {
+  transactionService.getAll(req, res);
+});
+
 module.exports = router;
