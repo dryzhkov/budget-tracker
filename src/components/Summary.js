@@ -37,7 +37,7 @@ class Summary extends React.Component {
       rows: [],
       headers: []
     };
-    const uniqCategories = _.uniqBy(transactions, 'category').filter(el => el.type === 'expense').map(el => el.category).sort();
+    const uniqCategories = _.uniqBy(transactions, 'category').map(el => el.category).sort();
     const uniqPayDates = _.uniqBy(transactions, 'payDate').map(el => el.payDate);
 
     tableData.headers.push('Expenses');
@@ -66,8 +66,8 @@ class Summary extends React.Component {
       });
 
       return <TableRow> 
-        { colHeaders }
-      </TableRow>;
+              { colHeaders }
+            </TableRow>;
     }
   }
 
@@ -81,8 +81,8 @@ class Summary extends React.Component {
         });
 
         return <TableRow key={index}>
-          { arr }
-        </TableRow>
+                { arr }
+              </TableRow>
       });
     }
   }
@@ -101,7 +101,7 @@ class Summary extends React.Component {
             displaySelectAll={false}
             adjustForCheckbox={false}
           >
-            { this.renderTableHeaders()}
+            { this.renderTableHeaders() }
           </TableHeader>
           <TableBody
             displayRowCheckbox={false}
