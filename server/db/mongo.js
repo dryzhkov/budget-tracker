@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const env = require('./env/environment-prod');
+const env = require('../env/environment-prod');
 
 mongoose.Promise = global.Promise;
 

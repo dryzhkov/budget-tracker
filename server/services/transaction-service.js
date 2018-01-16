@@ -1,7 +1,7 @@
-const Transaction = require('./transaction-model');
+const Transaction = require('../db/transaction-model');
 const ReadPreference = require('mongodb').ReadPreference;
 
-require('./mongo').connect();
+require('../db/mongo').connect();
 
 function get(req, res) {
   const { paydate } = req.params;

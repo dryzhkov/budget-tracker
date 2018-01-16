@@ -1,6 +1,6 @@
 import React from 'react';
 import LoginForm from './LoginForm';
-
+import AuthRepo from '../repositories/AuthRepo';
 class LoginPage extends React.Component {
 
   /**
@@ -31,8 +31,27 @@ class LoginPage extends React.Component {
     // prevent default action. in this case, action is the form submission event
     event.preventDefault();
 
-    console.log('email:', this.state.user.email);
-    console.log('password:', this.state.user.password);
+    // create a string for an HTTP body message
+    const email = encodeURIComponent(this.state.user.email);
+    const password = encodeURIComponent(this.state.user.password);
+  
+    AuthRepo.login(email, password)
+      .then(response => {
+        if (response.success) {
+          this.setState({
+            errors: {}
+          });
+        } else {
+          this.setState({
+            errors: response.errors
+          });
+        }
+      })
+      .catch(error => {
+        this.setState({
+          errors: error
+        });
+      });
   }
 
   /**
