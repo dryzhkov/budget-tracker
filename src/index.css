@@ -225,6 +225,7 @@ nav li a:hover:not(.active) {
   margin: 3em auto;
   text-align: center;
   padding: 2em;
+  background-color: #fafafa;
 }
 
 .login-container .success-message {
@@ -247,4 +248,8 @@ nav li a:hover:not(.active) {
 
 .login-container .card-heading {
   color: #000;
+}
+
+.button-line button {
+  background-color: #0078d7 !important;
 }
