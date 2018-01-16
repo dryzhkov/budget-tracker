@@ -1,11 +1,22 @@
 import React from 'react';
-import { Route, Switch } from 'react-router';
+import { Route, Switch, Redirect } from 'react-router';
 import BudgetList from './BudgetList';
 import Summary from './Summary';
 import Header from './Header';
 import LoginPage from './LoginPage';
+import Auth from '../common/Auth';
 
-const App = () => {
+const App = (props) => {
+  const handleLogout = () => {
+    Auth.deauthenticateUser();
+    // change the current URL to /
+    return <Redirect to="/login" />;
+  };
+
+  if (window.location.pathname !== "/login" && !Auth.isUserAuthenticated()) {
+    return <Redirect to="/login" />;
+  }
+
   return (
     <div>
       <Header />
@@ -13,6 +24,7 @@ const App = () => {
         <Route exact path="/" component={BudgetList} />
         <Route path="/summary/:year" component={Summary} />
         <Route path="/login" component={LoginPage} />
+        <Route path="/logout" component={handleLogout} />
       </Switch>
     </div>
   );

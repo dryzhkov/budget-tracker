@@ -1,6 +1,7 @@
 import React from 'react';
 import LoginForm from './LoginForm';
 import AuthRepo from '../repositories/AuthRepo';
+import Auth from '../common/Auth';
 class LoginPage extends React.Component {
 
   /**
@@ -25,8 +26,8 @@ class LoginPage extends React.Component {
   processForm(event) {
     event.preventDefault();
 
-    const email = encodeURIComponent(this.state.user.email);
-    const password = encodeURIComponent(this.state.user.password);
+    const email = this.state.user.email;
+    const password = this.state.user.password;
   
     AuthRepo.login(email, password)
       .then(response => {
@@ -34,9 +35,19 @@ class LoginPage extends React.Component {
           this.setState({
             errors: {}
           });
+
+          // save the token
+          Auth.authenticateUser(response.token);
+
+          // redirect to /
+          this.props.history.push('/');
         } else {
+          // change the component state
+          const errors = response.errors ? response.errors : {};
+          errors.summary = response.message;
+
           this.setState({
-            errors: response.errors
+            errors: errors
           });
         }
       })

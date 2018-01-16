@@ -1,10 +1,27 @@
+import Auth from '../common/Auth';
+
 const baseAPI = '/api';
+
+const getCommonHeaders = () => {
+  return {
+    'Authorization': `bearer ${Auth.getToken()}`,
+    'Accept': 'application/json'
+  }
+};
 
 const TransactionRepo = {
   get(payDate) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/transactions/${payDate.toString()}`)
-        .then(response => response.json())
+      fetch(`${baseAPI}/transactions/${payDate.toString()}`, {
+          method: 'GET',
+          headers: getCommonHeaders()
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw Error(response.statusText);
+          }
+          return response.json();
+        })
         .then(json => resolve(json))
         .catch(err => {
           reject(err);
@@ -14,13 +31,12 @@ const TransactionRepo = {
 
   create(transaction) {
     return new Promise((resolve, reject) => {
+      const headers = getCommonHeaders();
+      headers['Content-Type'] = 'application/json';
       fetch(`${baseAPI}/transaction`, {
         method: 'POST',
         body: JSON.stringify(transaction),
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        }
+        headers: headers
       })
         .then(result => result.json())
         .then(json => resolve(json))
@@ -32,13 +48,12 @@ const TransactionRepo = {
 
   update(transaction) {
     return new Promise((resolve, reject) => {
+      const headers = getCommonHeaders();
+      headers['Content-Type'] = 'application/json';
       fetch(`${baseAPI}/transaction`, {
         method: 'PUT',
         body: JSON.stringify(transaction),
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        }
+        headers: headers
       })
         .then(result => {
           resolve(result);
@@ -51,7 +66,7 @@ const TransactionRepo = {
 
   destroy(transaction) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/transaction/${transaction.id}`, { method: 'DELETE' })
+      fetch(`${baseAPI}/transaction/${transaction.id}`, { method: 'DELETE', headers: getCommonHeaders() })
         .then(response => response.json())
         .then(json => resolve(json))
         .catch(err => {
@@ -62,7 +77,7 @@ const TransactionRepo = {
 
   getAll(year) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/transactions/summary/${year}`, { method: 'GET'})
+      fetch(`${baseAPI}/transactions/summary/${year}`, { method: 'GET', headers: getCommonHeaders() })
         .then(response => response.json())
         .then(json => resolve(json))
         .catch(err => {

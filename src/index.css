@@ -42,7 +42,7 @@ button:hover {
 }
 button.delete-button {
   background-color: #d83b01 !important;
-  color: white;
+  color: #fafafa;
   padding: 4px;
   position: relative;
   font-size: 12px;
@@ -218,4 +218,33 @@ nav li a {
 
 nav li a:hover:not(.active) {
   background-color: #7d7e7d;
+}
+
+.login-container {
+  width: 600px;
+  margin: 3em auto;
+  text-align: center;
+  padding: 2em;
+}
+
+.login-container .success-message {
+  padding: 0 16px;
+  color: #4CAF50;
+}
+
+.login-container .error-message {
+  padding: 0 16px;
+  color: #f44336;
+}
+
+.login-container .field-line {
+  padding: 16px;
+}
+
+.login-container .button-line {
+  padding: 16px;
+}
+
+.login-container .card-heading {
+  color: #000;
 }
