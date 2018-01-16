@@ -24,7 +24,7 @@ This will build and start up both front end and the server.
 ### Production build
 
 ```bash
-npm build
+npm run build
 cd server
 npm start
 ```
