@@ -12,6 +12,8 @@ import {
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
+import Paper from 'material-ui/Paper';
+import Toggle from 'material-ui/Toggle';
 import TransactionRepo from '../repositories/TransactionRepo';
 
 class Summary extends React.Component {
@@ -21,18 +23,31 @@ class Summary extends React.Component {
     this.state = {
       tableHeaders: [],
       tableRows: [],
-      year: props.match.params.year
+      year: props.match.params.year,
+      categoriesAsCols: true
     };
+
+    this.handleToggle = this.handleToggle.bind(this);
   }
 
   componentWillMount() {
     TransactionRepo.getAll(this.state.year)
       .then(results => {
-        this.process(results);
+        this.setState({rawTransactions: results});
+        this.displayData(this.state.categoriesAsCols);
       });
+    
   }
 
-  process(transactions) {
+  displayData(categoriesAsCols) {
+    if (categoriesAsCols) {
+      this.convertToCategories(this.state.rawTransactions);
+    } else {
+      this.convertToPayDates(this.state.rawTransactions);
+    }
+  }
+
+  convertToPayDates(transactions) {
     const tableData = {
       rows: [],
       headers: []
@@ -56,6 +71,30 @@ class Summary extends React.Component {
     });
 
     this.setState({tableHeaders: tableData.headers, tableRows: tableData.rows});
+  }
+
+  convertToCategories(transactions) {
+    let headers = [];
+    let rows = [];
+    const uniqCategories = _.uniqBy(transactions, 'category').map(el => el.category).sort();
+    const uniqPayDates = _.uniqBy(transactions, 'payDate').map(el => el.payDate);
+    headers.push('Pay Date');
+    uniqCategories.forEach(category => headers.push(category));
+
+    uniqPayDates.forEach(payDate => {
+      let row = [];
+      row.push(formatPayDate(stringToPayDate(payDate)));
+      uniqCategories.forEach(category => {
+        let curTransaction = _.find(transactions, (t) => { 
+          return t.category === category && t.payDate === payDate;
+        });
+        row.push(curTransaction ? formatAsCurrency(curTransaction.amount) : '-');
+      });
+
+      rows.push(row);
+    });
+
+    this.setState({tableHeaders: headers, tableRows: rows});
   }
 
   renderTableHeaders() {
@@ -87,15 +126,29 @@ class Summary extends React.Component {
     }
   }
 
+  handleToggle(event, isInputChecked) {
+    this.setState({
+      categoriesAsCols: isInputChecked
+    });
+
+    this.displayData(isInputChecked);
+  }
+
   render() {
     return (
       <div>
+        <Toggle
+          style={{margin: 0}}
+          labelStyle={{color: '#B5D9EC'}}
+          onToggle={this.handleToggle}
+          toggled={this.state.categoriesAsCols}
+        />
+      <Paper zDepth={3} rounded={true} >
         <Table
-          height={'700px'}
           fixedHeader={true}
           selectable={true}
           multiSelectable={false}
-          style={{fontFamily: "Comic Sans MS"}}
+          style={{fontFamily: "Comic Sans MS", height: "auto", maxHeight: '700px'}}
         >
           <TableHeader
             displaySelectAll={false}
@@ -111,6 +164,7 @@ class Summary extends React.Component {
               { this.renderTableRows() }
           </TableBody>;
         </Table>
+      </Paper>
       </div>
     );
   }
