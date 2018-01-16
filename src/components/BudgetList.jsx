@@ -149,6 +149,8 @@ class BudgetList extends Component {
                 onSelect={this.handleSelect}
                 onDelete={this.handleDelete}
                 selectedTransaction={this.state.selectedTransaction} />;
+      } else {
+        return '';
       }
     });
   }

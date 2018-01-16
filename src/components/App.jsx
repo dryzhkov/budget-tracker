@@ -1,10 +1,9 @@
 import React from 'react';
 import { Route, Switch } from 'react-router';
-import logo from '../assets/logo.svg';
-import './App.css';
 import BudgetList from './BudgetList';
 import Summary from './Summary';
 import Header from './Header';
+import LoginPage from './LoginPage';
 
 const App = () => {
   return (
@@ -13,6 +12,7 @@ const App = () => {
       <Switch>
         <Route exact path="/" component={BudgetList} />
         <Route path="/summary/:year" component={Summary} />
+        <Route path="/login" component={LoginPage} />
       </Switch>
     </div>
   );

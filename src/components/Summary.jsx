@@ -6,7 +6,6 @@ import { formatAsCurrency, formatPayDate, stringToPayDate } from '../common/Util
 import {
   Table,
   TableBody,
-  TableFooter,
   TableHeader,
   TableHeaderColumn,
   TableRow,
@@ -112,7 +111,6 @@ class Summary extends React.Component {
 
   renderTableRows() {
     if (this.state.tableRows.length) {
-      let rows = [];
       return this.state.tableRows.map((cols, index) => {
         let arr = [];
         cols.forEach((c, i) => {
