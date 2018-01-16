@@ -1,4 +1,4 @@
-const baseAPI = '/api';
+const baseAPI = '/auth';
 const AuthRepo = {
   login(username, password) {
     return new Promise((resolve, reject) => {

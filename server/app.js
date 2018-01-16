@@ -3,9 +3,9 @@ const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-
-const index = require('./routes/index');
-
+const passport = require('passport');
+const apiRoutes = require('./routes/api');
+const authRoutes = require('./routes/auth');
 const app = express();
 
 // uncomment after placing your favicon in /public
@@ -16,11 +16,25 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'build')));
 
+// initialize passport
+app.use(passport.initialize());
+
+// load passport strategies
+const localLoginStrategy = require('./passport/local-login');
+passport.use('local-login', localLoginStrategy);
+
+// pass the authenticaion checker middleware
+const authCheckMiddleware = require('./passport/auth-check');
+app.use('/api', authCheckMiddleware);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use('/api', index);
+// register app routes
+app.use('/api', apiRoutes);
+app.use('/auth', authRoutes);
+
 app.get('*', (req, res) => {
   res.sendFile('build/index.html', { root: global });
 });

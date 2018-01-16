@@ -1,4 +1,4 @@
-const Transaction = require('../db/transaction-model');
+const Transaction = require('../db/models/transaction');
 const ReadPreference = require('mongodb').ReadPreference;
 
 require('../db/mongo').connect();

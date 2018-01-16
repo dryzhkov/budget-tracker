@@ -1,3 +1,5 @@
+const User = require('../db/models/user');
+
 function login(req, res) {
   const validationResult = validateLoginForm(req.body);
   if (!validationResult.success) {

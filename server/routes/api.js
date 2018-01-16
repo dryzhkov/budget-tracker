@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const transactionService = require('../services/transaction-service');
-const authService = require('../services/auth-service');
 
 router.get('/transactions/:paydate', function(req, res, next) {
   transactionService.get(req, res);
@@ -22,10 +21,6 @@ router.delete('/transaction/:id', (req, res) => {
 
 router.get('/transactions/summary/:year', (req, res) => {
   transactionService.getAll(req, res);
-});
-
-router.post('/login', (req, res) => {
-  authService.login(req, res);
 });
 
 module.exports = router;
