@@ -23,4 +23,8 @@ router.get('/transactions/:year/summary', (req, res) => {
   transactionService.getAll(req, res);
 });
 
+router.get('/transactions/:year/categories', (req, res) => {
+  transactionService.getCategories(req, res);
+});
+
 module.exports = router;

@@ -89,6 +89,31 @@ function getAll(req, res) {
     });
 }
 
+function getCategories(req, res) {
+  const year = Number.parseInt(req.params.year);
+
+  if (!Number.isInteger(year)) {
+    res.status(400).send('invalid request param.')
+  }
+
+  Transaction
+    .aggregate([
+      {
+        $match: { "payDate" : { $regex : `${year}-.*` } }
+      },
+      {
+        $group: { _id: "$category", type: {$first: "$type"} }
+      },
+      { $limit: 50 }
+    ])
+    .then(transactions => {
+      res.json(transactions);
+    })
+    .catch(err => {
+      res.status(500).send(err);
+    });
+}
+
 function convert(dbElement) {
   return {
     id: dbElement.id,
@@ -114,4 +139,4 @@ function stringToPayDate(value) {
   return null;
 }
 
-module.exports = { get, create, update, destroy, getAll };
+module.exports = { get, create, update, destroy, getAll, getCategories };

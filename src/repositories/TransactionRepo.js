@@ -84,6 +84,17 @@ const TransactionRepo = {
           reject(err);
         });
     });
+  },
+
+  getUniqueCategories(year) {
+    return new Promise((resolve, reject) => {
+      fetch(`${baseAPI}/transactions/${year}/categories`, { method: 'GET', headers: getCommonHeaders() })
+        .then(response => response.json())
+        .then(json => resolve(json))
+        .catch(err => {
+          reject(err);
+        });
+    });
   }
 };
 

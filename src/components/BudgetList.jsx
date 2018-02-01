@@ -36,6 +36,8 @@ class BudgetList extends Component {
 
   componentDidMount() {
     this.fetchTransactions(this.state.selectedPayDate);
+
+    TransactionRepo.getUniqueCategories("2018");
   }
 
   fetchTransactions(payDate) {
