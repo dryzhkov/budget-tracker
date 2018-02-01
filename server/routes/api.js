@@ -19,7 +19,7 @@ router.delete('/transaction/:id', (req, res) => {
   transactionService.destroy(req, res);
 });
 
-router.get('/transactions/summary/:year', (req, res) => {
+router.get('/transactions/:year/summary', (req, res) => {
   transactionService.getAll(req, res);
 });
 

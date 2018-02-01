@@ -50,7 +50,7 @@ function getCurrentPayDate() {
   let currentDate = moment();
   let dayOfMonth = currentDate.date();
   let year = currentDate.year();
-  let period = Math.ceil(2 * currentDate.month()) + Math.ceil(dayOfMonth / 15); // 15 is because of semi-monthly pay periods
+  let period = Math.ceil(2 * currentDate.month()) + (dayOfMonth > 15 ? 2 : 1); // 15 is because of semi-monthly pay periods
 
   return new PayDate(year, period);
 }

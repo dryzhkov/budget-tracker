@@ -77,7 +77,7 @@ const TransactionRepo = {
 
   getAll(year) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/transactions/summary/${year}`, { method: 'GET', headers: getCommonHeaders() })
+      fetch(`${baseAPI}/transactions/${year}/summary`, { method: 'GET', headers: getCommonHeaders() })
         .then(response => response.json())
         .then(json => resolve(json))
         .catch(err => {
