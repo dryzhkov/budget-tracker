@@ -76,8 +76,6 @@ function destroy(req, res) {
 function getAll(req, res) {
   const year = Number.parseInt(req.params.year);
 
-  console.log("[" + year + "]");
-
   if (!Number.isInteger(year)) {
     res.status(400).send('invalid request param.')
   }
