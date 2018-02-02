@@ -21,7 +21,8 @@ class BudgetList extends Component {
       },
       selectedPayDate: Utils.getCurrentPayDate(),
       messageText: '',
-      showMessageBar: false
+      showMessageBar: false,
+      uniqueCategories: []
     };
 
     this.handleSelect = this.handleSelect.bind(this);
@@ -36,8 +37,6 @@ class BudgetList extends Component {
 
   componentDidMount() {
     this.fetchTransactions(this.state.selectedPayDate);
-
-    TransactionRepo.getUniqueCategories("2018");
   }
 
   fetchTransactions(payDate) {
@@ -50,7 +49,8 @@ class BudgetList extends Component {
 
   handleSelect(transaction) {
     this.setState({
-      selectedTransaction: transaction
+      selectedTransaction: transaction,
+      addingNew: false
     });
   }
 
@@ -182,7 +182,6 @@ class BudgetList extends Component {
     });
   }
 
-
   render() {
     return (
       <div className="budgetwrapper">
@@ -227,7 +226,8 @@ class BudgetList extends Component {
           <button onClick={() => this.handleEnableAddMode('saving')}>+ Saving</button>
           <EditTransaction 
             addingNew={this.state.addingNew} 
-            selectedTransaction={this.state.selectedTransaction} 
+            selectedTransaction={this.state.selectedTransaction}
+            excludedSuggestions={this.state.transactions.map(t => t.category)}
             onChange={this.handleOnChange}
             onSave={this.handleSave}
             onCancel={this.handleCancel}
