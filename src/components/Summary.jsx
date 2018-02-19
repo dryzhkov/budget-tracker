@@ -52,7 +52,7 @@ class Summary extends React.Component {
       headers: []
     };
     const uniqCategories = _.uniqBy(transactions, 'category').map(el => el.category).sort();
-    const uniqPayDates = _.uniqBy(transactions, 'payDate').map(el => el.payDate);
+    const uniqPayDates = _.orderBy(_.uniqBy(transactions, 'payDate').map(el => el.payDate), [_.identity], ['desc']);
 
     tableData.headers.push('Expenses');
     tableData.headers = tableData.headers.concat(uniqPayDates.map(date => formatPayDate(stringToPayDate(date))));
@@ -76,7 +76,7 @@ class Summary extends React.Component {
     let headers = [];
     let rows = [];
     const uniqCategories = _.uniqBy(transactions, 'category').map(el => el.category).sort();
-    const uniqPayDates = _.uniqBy(transactions, 'payDate').map(el => el.payDate);
+    const uniqPayDates = _.orderBy(_.uniqBy(transactions, 'payDate').map(el => el.payDate), [_.identity], ['desc']);
     headers.push('Pay Date');
     uniqCategories.forEach(category => headers.push(category));
 

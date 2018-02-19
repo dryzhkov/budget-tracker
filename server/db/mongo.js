@@ -3,13 +3,14 @@ const env = require('../env/environment-prod');
 
 mongoose.Promise = global.Promise;
 
-const mongoUri = `mongodb://${env.dbName}.documents.azure.com:${env.port}/?ssl=true`;
+// URL format: 'mongodb://username:password@host:port/database?options...'
+const mongoUri = `mongodb://dvm5074.cloudapp.net:${env.port}/budget`;
 
 function connect() {
   return mongoose.connect(mongoUri, {
     useMongoClient: true,
-    user: env.dbName,
-    pass: env.key
+    user: env.user,
+    pass: env.pwd
   });
 }
 
