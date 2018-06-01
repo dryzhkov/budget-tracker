@@ -39,51 +39,58 @@ class Summary extends React.Component {
   }
 
   displayData(categoriesAsCols) {
+    const uniqCategories = _.uniqBy(this.state.rawTransactions, 'category').map(el => el.category).sort();
+    const uniqPayDates = _.reverse(
+      _.sortedUniq(
+        _.sortBy(this.state.rawTransactions, 
+          [
+            (t) => { return parseInt(t.payDate.split('-')[1])}
+          ]
+        )
+        .map(t => t.payDate)
+      )
+    );
+
     if (categoriesAsCols) {
-      this.convertToCategories(this.state.rawTransactions);
+      this.convertToCategories(this.state.rawTransactions, uniqPayDates, uniqCategories);
     } else {
-      this.convertToPayDates(this.state.rawTransactions);
+      this.convertToPayDates(this.state.rawTransactions, uniqPayDates, uniqCategories);
     }
   }
 
-  convertToPayDates(transactions) {
-    const tableData = {
-      rows: [],
-      headers: []
-    };
-    const uniqCategories = _.uniqBy(transactions, 'category').map(el => el.category).sort();
-    const uniqPayDates = _.orderBy(_.uniqBy(transactions, 'payDate').map(el => el.payDate), [_.identity], ['desc']);
+  convertToPayDates(transactions, dates, categories) {
+    let headers = [];
+    let rows = [];
 
-    tableData.headers.push('Expenses');
-    tableData.headers = tableData.headers.concat(uniqPayDates.map(date => formatPayDate(stringToPayDate(date))));
-    uniqCategories.forEach(category => {
+    headers.push('Expenses');
+    headers = headers.concat(dates.map(date => formatPayDate(stringToPayDate(date), "MMM Do")));
+    categories.forEach(category => {
       let row = [];
       row.push(category);
-      uniqPayDates.forEach(payDate => {
+      dates.forEach(payDate => {
         let curTransaction = _.find(transactions, (t) => { 
           return t.category === category && t.payDate === payDate;
         });
         row.push(curTransaction ? formatAsCurrency(curTransaction.amount) : '-');
       });
 
-      tableData.rows.push(row);
+      rows.push(row);
     });
 
-    this.setState({tableHeaders: tableData.headers, tableRows: tableData.rows});
+    this.setState({tableHeaders: headers, tableRows: rows});
   }
 
-  convertToCategories(transactions) {
+  convertToCategories(transactions, dates, categories) {
     let headers = [];
     let rows = [];
-    const uniqCategories = _.uniqBy(transactions, 'category').map(el => el.category).sort();
-    const uniqPayDates = _.orderBy(_.uniqBy(transactions, 'payDate').map(el => el.payDate), [_.identity], ['desc']);
+    
     headers.push('Pay Date');
-    uniqCategories.forEach(category => headers.push(category));
+    headers = headers.concat(categories);
 
-    uniqPayDates.forEach(payDate => {
+    dates.forEach(payDate => {
       let row = [];
-      row.push(formatPayDate(stringToPayDate(payDate)));
-      uniqCategories.forEach(category => {
+      row.push(formatPayDate(stringToPayDate(payDate), "MMM Do"));
+      categories.forEach(category => {
         let curTransaction = _.find(transactions, (t) => { 
           return t.category === category && t.payDate === payDate;
         });

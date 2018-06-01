@@ -55,7 +55,7 @@ function getCurrentPayDate() {
   return new PayDate(year, period);
 }
 
-function formatPayDate(payDate) {
+function formatPayDate(payDate, format) {
   if (!payDate || !payDate.year || !payDate.period) {
     throw Error('invalid pay date: ' + payDate);
   }
@@ -65,7 +65,7 @@ function formatPayDate(payDate) {
   let date = isLastInMonth ? 
               moment([payDate.year, month]).endOf('month') :
               moment([payDate.year, month, 15]);
-  return date.format("MMM Do, YYYY");
+  return date.format(format);
 }
 
 export { 

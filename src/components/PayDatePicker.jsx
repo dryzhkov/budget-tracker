@@ -16,7 +16,7 @@ class PayDatePicker extends Component {
 
     // populate dropdown 6 months in the past
     for (let i = 0; i < 12; i++ ) {
-      const payDateFormatted = Utils.formatPayDate(payDate);
+      const payDateFormatted = Utils.formatPayDate(payDate, "MMM Do, YYYY");
       this.menuItems.push(<MenuItem value={payDate.toString()} key={payDate.toString()} primaryText={payDateFormatted}/>)
 
       payDate.period--;

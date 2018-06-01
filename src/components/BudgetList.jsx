@@ -43,7 +43,6 @@ class BudgetList extends Component {
     TransactionRepo.get(payDate)
       .then(result => {
         this.setState({ transactions: result, budget: Utils.calculateBudget(result)});
-        this.displayMessage('Displaying budget for ' + Utils.formatPayDate(payDate), 'success');
       });
   }
 
