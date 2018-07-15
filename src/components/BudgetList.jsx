@@ -226,7 +226,7 @@ class BudgetList extends Component {
           <EditTransaction 
             addingNew={this.state.addingNew} 
             selectedTransaction={this.state.selectedTransaction}
-            excludedSuggestions={this.state.transactions.map(t => t.category)}
+            excludedSuggestions={this.state.transactions.map(t => { return { category: t.category, type: t.type } })}
             onChange={this.handleOnChange}
             onSave={this.handleSave}
             onCancel={this.handleCancel}

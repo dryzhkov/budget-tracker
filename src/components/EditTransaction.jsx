@@ -5,13 +5,13 @@ import MenuItem from 'material-ui/MenuItem';
 import * as _ from 'lodash';
 
 import TransactionRepo from '../repositories/TransactionRepo';
-import {getCurrentPayDate} from '../common/Utils';
+import {getLastMonthPayDates} from '../common/Utils';
 
 class EditTransaction extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      availableCategories: [],
+      recentTransactions: [],
       category: ''
     };
 
@@ -19,20 +19,33 @@ class EditTransaction extends React.Component {
   }
 
   componentDidMount() {
-    const currentYear = getCurrentPayDate().year;
-    TransactionRepo.getUniqueCategories(currentYear)
-      .then(categories => {
-        this.setState({
-          availableCategories: categories
-        });
+    let results = [];
+    const lastPayDates = getLastMonthPayDates();
+    const t1 = TransactionRepo.get(lastPayDates[0].toString())
+      .then(result => {
+        results = results.concat(result);
       });
+    const t2 = TransactionRepo.get(lastPayDates[1].toString())
+      .then(result => {
+        results = results.concat(result);
+      });
+    Promise.all([t1, t2]).then(() => {
+      this.setState({
+        recentTransactions: results
+       });
+    });
   }
 
   renderSuggestions() {
-    return _.map(this.state.availableCategories, (category, index) => {
-      if (!this.props.excludedSuggestions || 
-          this.props.excludedSuggestions.indexOf(category._id) < 0) {
-        return <MenuItem key={index} value={category._id} primaryText={category._id} />
+    return _.map(this.state.recentTransactions, (t, index) => {
+      if (t.type === this.props.selectedTransaction.type) {
+        const itemIndex = _.findIndex(this.props.excludedSuggestions, (s) => { 
+          return s.category === t.category && s.type === this.props.selectedTransaction.type;
+        });
+  
+        if (itemIndex < 0) {
+          return <MenuItem key={index} value={t.category} primaryText={t.category + ' ~ $' + t.amount} />
+        }
       }
     });
   }

@@ -55,6 +55,16 @@ function getCurrentPayDate() {
   return new PayDate(year, period);
 }
 
+function getLastMonthPayDates() {
+  const lastMonthDate = moment().subtract(1, 'months');
+  const year = lastMonthDate.year();
+  const period = 2 * lastMonthDate.month();
+  return [
+    new PayDate(year, period + 1),
+    new PayDate(year, period + 2)
+  ];
+}
+
 function formatPayDate(payDate, format) {
   if (!payDate || !payDate.year || !payDate.period) {
     throw Error('invalid pay date: ' + payDate);
@@ -73,5 +83,6 @@ export {
   formatAsCurrency,
   formatPayDate,
   getCurrentPayDate,
-  stringToPayDate
+  stringToPayDate,
+  getLastMonthPayDates
 };
