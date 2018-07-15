@@ -5,7 +5,7 @@ import MenuItem from 'material-ui/MenuItem';
 import * as _ from 'lodash';
 
 import TransactionRepo from '../repositories/TransactionRepo';
-import {getLastMonthPayDates} from '../common/Utils';
+import {getLastMonthPayDates, getCurrentPayDate} from '../common/Utils';
 
 class EditTransaction extends React.Component {
   constructor(props) {
@@ -19,21 +19,16 @@ class EditTransaction extends React.Component {
   }
 
   componentDidMount() {
-    let results = [];
-    const lastPayDates = getLastMonthPayDates();
-    const t1 = TransactionRepo.get(lastPayDates[0].toString())
-      .then(result => {
-        results = results.concat(result);
+    const currentPayDate = getCurrentPayDate();
+    const lastMonthPayDates = getLastMonthPayDates();
+    const targetPayDate = (currentPayDate.period % 2 === 0) ? lastMonthPayDates[1] : lastMonthPayDates[0];
+    
+    TransactionRepo.get(targetPayDate.toString())
+      .then(results => {
+        this.setState({
+          recentTransactions: results
+        });
       });
-    const t2 = TransactionRepo.get(lastPayDates[1].toString())
-      .then(result => {
-        results = results.concat(result);
-      });
-    Promise.all([t1, t2]).then(() => {
-      this.setState({
-        recentTransactions: results
-       });
-    });
   }
 
   renderSuggestions() {
