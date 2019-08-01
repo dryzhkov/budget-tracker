@@ -33,6 +33,6 @@ npm start
 ```bash
 cat /etc/apache2/sites-available/dimaryz.com-le-ssl.conf 
 pm2 (start|show) server
-scp -r server/ <user@server-hostname>:/var/www/dimaryz.com/
+scp -r server/* <user@server-hostname>:/home/budgettracker/
 mv /var/www/dimaryz.com/server/* /home/budgettracker/
 ```
