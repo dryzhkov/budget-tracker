@@ -21,9 +21,11 @@
   },
   "devDependencies": {
     "concurrently": "^3.5.0",
+    "enzyme": "^3.10.0",
     "lodash": "^4.17.14",
     "nodemon": "^1.19.1",
-    "react-scripts": "1.0.10"
+    "react-scripts": "1.0.10",
+    "react-test-renderer": "^16.8.6"
   },
   "scripts": {
     "start": "concurrently \"react-scripts start\" \"nodemon server/server.js\"",

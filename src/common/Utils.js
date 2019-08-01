@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 
 function PayDate(year, period) {
   this.year = year;
@@ -72,17 +72,18 @@ function formatPayDate(payDate, format) {
 
   let isLastInMonth = payDate.period % 2 === 0;
   let month = Math.ceil(0.5 * payDate.period) - 1; //0 - 11
-  let date = isLastInMonth ? 
-              moment([payDate.year, month]).endOf('month') :
-              moment([payDate.year, month, 15]);
+  let date = isLastInMonth ?
+    moment([payDate.year, month]).endOf('month') :
+    moment([payDate.year, month, 15]);
   return date.format(format);
 }
 
-export { 
+export {
   calculateBudget,
   formatAsCurrency,
   formatPayDate,
   getCurrentPayDate,
   stringToPayDate,
-  getLastMonthPayDates
+  getLastMonthPayDates,
+  PayDate
 };
