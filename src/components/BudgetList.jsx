@@ -1,25 +1,25 @@
 import React, { Component } from 'react';
-
 import Transaction from './Transaction';
 import EditTransaction from './EditTransaction';
 import PayDatePicker from './PayDatePicker';
 import MessageBar from './MessageBar';
 import * as Utils from '../common/Utils';
 import TransactionRepo from '../repositories/TransactionRepo';
+import { BudgetContext } from './budget-context';
 
 class BudgetList extends Component {
   constructor() {
     super();
 
     this.state = {
-      transactions: [], 
+      transactions: [],
       addingNew: false,
       budget: {
         totalIncome: 0,
         totalExpense: 0,
         totalSaving: 0
       },
-      selectedPayDate: Utils.getCurrentPayDate(),
+      selectedPayDate: BudgetContext.getSelectedPayDay(),
       messageText: '',
       showMessageBar: false,
       uniqueCategories: []
@@ -42,7 +42,7 @@ class BudgetList extends Component {
   fetchTransactions(payDate) {
     TransactionRepo.get(payDate)
       .then(result => {
-        this.setState({ transactions: result, budget: Utils.calculateBudget(result)});
+        this.setState({ transactions: result, budget: Utils.calculateBudget(result) });
       });
   }
 
@@ -60,7 +60,7 @@ class BudgetList extends Component {
   handleOnChange(event) {
     let eventName = event.target.name;
     let eventValue = event.target.value;
-    
+
     if (eventName === 'amount') {
       eventValue = Number.parseFloat(eventValue);
     }
@@ -120,7 +120,7 @@ class BudgetList extends Component {
 
   handleDelete(event, transaction) {
     event.stopPropagation();
-    
+
     TransactionRepo
       .destroy(transaction)
       .then(() => {
@@ -135,7 +135,7 @@ class BudgetList extends Component {
         });
 
         if (this.state.selectedTransaction && this.state.selectedTransaction.id === transaction.id) {
-          this.setState({selectedTransaction: null});
+          this.setState({ selectedTransaction: null });
         }
       })
       .catch((error) => console.log(error));
@@ -144,12 +144,12 @@ class BudgetList extends Component {
   renderTransactionsByType(type) {
     return this.state.transactions.map(transaction => {
       if (transaction.type === type) {
-        return <Transaction 
-                key={transaction.id} 
-                transaction={transaction} 
-                onSelect={this.handleSelect}
-                onDelete={this.handleDelete}
-                selectedTransaction={this.state.selectedTransaction} />;
+        return <Transaction
+          key={transaction.id}
+          transaction={transaction}
+          onSelect={this.handleSelect}
+          onDelete={this.handleDelete}
+          selectedTransaction={this.state.selectedTransaction} />;
       } else {
         return '';
       }
@@ -162,6 +162,7 @@ class BudgetList extends Component {
         selectedPayDate: value
       });
 
+      BudgetContext.setSelectedPayDate(value);
       this.fetchTransactions(value);
     }
   }
@@ -184,7 +185,7 @@ class BudgetList extends Component {
   render() {
     return (
       <div className="budgetwrapper">
-        <div className="pickerwrapper"> 
+        <div className="pickerwrapper">
           <PayDatePicker onChange={this.handleDateChange} />
         </div>
         <div className="transaction-groups">
@@ -223,8 +224,8 @@ class BudgetList extends Component {
           <button onClick={() => this.handleEnableAddMode('income')}>+ Income</button>
           <button onClick={() => this.handleEnableAddMode('expense')}>+ Expense</button>
           <button onClick={() => this.handleEnableAddMode('saving')}>+ Saving</button>
-          <EditTransaction 
-            addingNew={this.state.addingNew} 
+          <EditTransaction
+            addingNew={this.state.addingNew}
             selectedTransaction={this.state.selectedTransaction}
             excludedSuggestions={this.state.transactions.map(t => { return { category: t.category, type: t.type } })}
             onChange={this.handleOnChange}
@@ -232,13 +233,13 @@ class BudgetList extends Component {
             onCancel={this.handleCancel}
           />
         </div>
-        
-        <MessageBar 
+
+        <MessageBar
           open={this.state.showMessageBar}
           message={this.state.messageText}
           type={this.state.messageType}
           requestClose={this.closeMessageBar}
-          />
+        />
       </div>
     );
   }
