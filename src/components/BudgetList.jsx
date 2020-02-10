@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
-import Transaction from './Transaction';
-import EditTransaction from './EditTransaction';
-import PayDatePicker from './PayDatePicker';
-import MessageBar from './MessageBar';
-import * as Utils from '../common/Utils';
-import TransactionRepo from '../repositories/TransactionRepo';
-import { BudgetContext } from './budget-context';
+import React, { Component } from "react";
+import Transaction from "./Transaction";
+import EditTransaction from "./EditTransaction";
+import PayDatePicker from "./PayDatePicker";
+import MessageBar from "./MessageBar";
+import * as Utils from "../common/Utils";
+import TransactionRepo from "../repositories/TransactionRepo";
+import { BudgetContext } from "./budget-context";
+import Summary from "./Summary";
 
 class BudgetList extends Component {
   constructor() {
@@ -20,7 +21,7 @@ class BudgetList extends Component {
         totalSaving: 0
       },
       selectedPayDate: BudgetContext.getSelectedPayDay(),
-      messageText: '',
+      messageText: "",
       showMessageBar: false,
       uniqueCategories: []
     };
@@ -40,10 +41,12 @@ class BudgetList extends Component {
   }
 
   fetchTransactions(payDate) {
-    TransactionRepo.get(payDate)
-      .then(result => {
-        this.setState({ transactions: result, budget: Utils.calculateBudget(result) });
+    TransactionRepo.get(payDate).then(result => {
+      this.setState({
+        transactions: result,
+        budget: Utils.calculateBudget(result)
       });
+    });
   }
 
   handleSelect(transaction) {
@@ -61,7 +64,7 @@ class BudgetList extends Component {
     let eventName = event.target.name;
     let eventValue = event.target.value;
 
-    if (eventName === 'amount') {
+    if (eventName === "amount") {
       eventValue = Number.parseFloat(eventValue);
     }
 
@@ -73,21 +76,22 @@ class BudgetList extends Component {
   handleEnableAddMode(type) {
     this.setState({
       addingNew: true,
-      selectedTransaction: { id: 0, type: type, amount: 0, category: '' }
+      selectedTransaction: { id: 0, type: type, amount: 0, category: "" }
     });
   }
 
   handleSave() {
-    let transactions = this.state.transactions;
     if (this.state.addingNew) {
-      const transaction = Object.assign({
-        payDate: this.state.selectedPayDate
-      }, this.state.selectedTransaction);
+      const transaction = Object.assign(
+        {
+          payDate: this.state.selectedPayDate
+        },
+        this.state.selectedTransaction
+      );
 
-      TransactionRepo
-        .create(transaction)
+      TransactionRepo.create(transaction)
         .then(result => {
-          transactions.push(result);
+          const transactions = this.state.transactions.concat([result]);
 
           let budget = Utils.calculateBudget(transactions);
           this.setState({
@@ -97,22 +101,21 @@ class BudgetList extends Component {
             budget: budget
           });
 
-          this.displayMessage('Transaction has been saved!', 'success');
+          this.displayMessage("Transaction has been saved!", "success");
         })
         .catch(err => {
-          this.displayMessage('Unable to save.', 'error');
+          this.displayMessage("Unable to save.", "error");
           console.log(err);
         });
     } else {
-      TransactionRepo
-        .update(this.state.selectedTransaction)
+      TransactionRepo.update(this.state.selectedTransaction)
         .then(() => {
           let budget = Utils.calculateBudget(this.state.transactions);
           this.setState({ selectedTransaction: null, budget });
-          this.displayMessage('Updated!', 'success');
+          this.displayMessage("Updated!", "success");
         })
         .catch(err => {
-          this.displayMessage('Unable to update.', 'error');
+          this.displayMessage("Unable to update.", "error");
           console.log(err);
         });
     }
@@ -121,8 +124,7 @@ class BudgetList extends Component {
   handleDelete(event, transaction) {
     event.stopPropagation();
 
-    TransactionRepo
-      .destroy(transaction)
+    TransactionRepo.destroy(transaction)
       .then(() => {
         let transactions = this.state.transactions;
 
@@ -134,24 +136,30 @@ class BudgetList extends Component {
           budget
         });
 
-        if (this.state.selectedTransaction && this.state.selectedTransaction.id === transaction.id) {
+        if (
+          this.state.selectedTransaction &&
+          this.state.selectedTransaction.id === transaction.id
+        ) {
           this.setState({ selectedTransaction: null });
         }
       })
-      .catch((error) => console.log(error));
+      .catch(error => console.log(error));
   }
 
   renderTransactionsByType(type) {
     return this.state.transactions.map(transaction => {
       if (transaction.type === type) {
-        return <Transaction
-          key={transaction.id}
-          transaction={transaction}
-          onSelect={this.handleSelect}
-          onDelete={this.handleDelete}
-          selectedTransaction={this.state.selectedTransaction} />;
+        return (
+          <Transaction
+            key={transaction.id}
+            transaction={transaction}
+            onSelect={this.handleSelect}
+            onDelete={this.handleDelete}
+            selectedTransaction={this.state.selectedTransaction}
+          />
+        );
       } else {
-        return '';
+        return "";
       }
     });
   }
@@ -170,8 +178,8 @@ class BudgetList extends Component {
   closeMessageBar() {
     this.setState({
       showMessageBar: false,
-      messageText: ''
-    })
+      messageText: ""
+    });
   }
 
   displayMessage(msg, type) {
@@ -182,7 +190,29 @@ class BudgetList extends Component {
     });
   }
 
+  summaryPaydates(payDate, count) {
+    let { period, year } = payDate;
+    const summary = {
+      paydates: [],
+      years: [year]
+    };
+
+    for (let i = 0; i < count; i++) {
+      summary.paydates.push(new Utils.PayDate(year, period).toString());
+      period--;
+
+      if (period < 1) {
+        period = 24;
+        year--;
+        summary.years.push(year);
+      }
+    }
+    return summary;
+  }
+
   render() {
+    const summary = this.summaryPaydates(BudgetContext.getSelectedPayDay(), 4);
+
     return (
       <div className="budgetwrapper">
         <div className="pickerwrapper">
@@ -190,48 +220,71 @@ class BudgetList extends Component {
         </div>
         <div className="transaction-groups">
           <h2 className="totalheader">Income</h2>
-          <div className="total income-text">{Utils.formatAsCurrency(this.state.budget.totalIncome)}</div>
+          <div className="total income-text">
+            {Utils.formatAsCurrency(this.state.budget.totalIncome)}
+          </div>
           <ul className="transactions">
-            {
-              this.renderTransactionsByType('income')
-            }
+            {this.renderTransactionsByType("income")}
           </ul>
         </div>
         <div className="transaction-groups">
           <h2 className="totalheader">Expense</h2>
-          <div className="total expense-text">{Utils.formatAsCurrency(this.state.budget.totalExpense)}</div>
+          <div className="total expense-text">
+            {Utils.formatAsCurrency(this.state.budget.totalExpense)}
+          </div>
           <ul className="transactions">
-            {
-              this.renderTransactionsByType('expense')
-            }
+            {this.renderTransactionsByType("expense")}
           </ul>
         </div>
         <div className="transaction-groups">
           <h2 className="totalheader">Saving</h2>
-          <div className="total saving-text">{Utils.formatAsCurrency(this.state.budget.totalSaving)}</div>
+          <div className="total saving-text">
+            {Utils.formatAsCurrency(this.state.budget.totalSaving)}
+          </div>
           <ul className="transactions">
-            {
-              this.renderTransactionsByType('saving')
-            }
+            {this.renderTransactionsByType("saving")}
           </ul>
         </div>
         <div className="transaction-groups balance-area">
           <h2 className="totalheader">Balance</h2>
-          <div className="total balance-text">{Utils.formatAsCurrency(this.state.budget.totalIncome - this.state.budget.totalExpense - this.state.budget.totalSaving)}</div>
+          <div className="total balance-text">
+            {Utils.formatAsCurrency(
+              this.state.budget.totalIncome -
+                this.state.budget.totalExpense -
+                this.state.budget.totalSaving
+            )}
+          </div>
         </div>
 
         <div className="editarea">
-          <button onClick={() => this.handleEnableAddMode('income')}>+ Income</button>
-          <button onClick={() => this.handleEnableAddMode('expense')}>+ Expense</button>
-          <button onClick={() => this.handleEnableAddMode('saving')}>+ Saving</button>
+          <button onClick={() => this.handleEnableAddMode("income")}>
+            + Income
+          </button>
+          <button onClick={() => this.handleEnableAddMode("expense")}>
+            + Expense
+          </button>
+          <button onClick={() => this.handleEnableAddMode("saving")}>
+            + Saving
+          </button>
           <EditTransaction
             addingNew={this.state.addingNew}
             selectedTransaction={this.state.selectedTransaction}
-            excludedSuggestions={this.state.transactions.map(t => { return { category: t.category, type: t.type } })}
+            excludedSuggestions={this.state.transactions.map(t => {
+              return { category: t.category, type: t.type };
+            })}
             onChange={this.handleOnChange}
             onSave={this.handleSave}
             onCancel={this.handleCancel}
           />
+        </div>
+        <div className="summary">
+          <Summary
+            years={summary.years}
+            paydates={summary.paydates}
+            categoriesAsCols={false}
+            hideToggle={true}
+            transactions={this.state.transactions}
+          ></Summary>
         </div>
 
         <MessageBar

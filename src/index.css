@@ -15,17 +15,25 @@ html {
 
 body {
   margin: 2em;
-  color: #B5D9EC;
+  color: #b5d9ec;
 
   background: #7d7e7d; /* Old browsers */
-  background: -webkit-linear-gradient(top, #7d7e7d 0%,#0e0e0e 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to bottom, #7d7e7d 0%,#0e0e0e 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  background: -webkit-linear-gradient(
+    top,
+    #7d7e7d 0%,
+    #0e0e0e 100%
+  ); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(
+    to bottom,
+    #7d7e7d 0%,
+    #0e0e0e 100%
+  ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 
 body,
 input[text],
 button {
-  color: #B5D9EC;
+  color: #b5d9ec;
 }
 
 button {
@@ -54,12 +62,12 @@ button.delete-button-hidden {
 }
 
 div {
-  margin: .1em;
+  margin: 0.1em;
 }
 
 .selected {
-  background-color: #B5D9EC !important;
-  color: #FAFAFA;
+  background-color: #b5d9ec !important;
+  color: #fafafa;
 }
 
 .transactions {
@@ -72,20 +80,20 @@ div {
   cursor: pointer;
   position: relative;
   left: 0;
-  margin: .5em;
-  padding: .5em;
-  height: 2.0em;
+  margin: 0.5em;
+  padding: 0.5em;
+  height: 2em;
   border-radius: 4px;
   width: 20em;
 }
 .transactions li:hover {
   color: #0078d7;
   background-color: #ddd;
-  left: .1em;
+  left: 0.1em;
 }
 .transactions li.selected:hover {
   /*background-color: #BBD8DC !important;*/
-  color: #FAFAFA;
+  color: #fafafa;
 }
 .transactions .text {
   position: relative;
@@ -93,7 +101,7 @@ div {
 }
 .transactions .amount {
   margin: 5px 0;
-  float:right;
+  float: right;
 }
 .transactions .category {
   font-weight: bold;
@@ -101,7 +109,7 @@ div {
   float: left;
 }
 .header-bar {
-  background-color: #B5D9EC;
+  background-color: #b5d9ec;
   height: 4px;
   margin-top: 10px;
   margin-bottom: 10px;
@@ -109,7 +117,7 @@ div {
 .edit-label {
   display: inline-block;
   width: 4em;
-  margin: .5em;
+  margin: 0.5em;
 }
 label.value {
   margin-left: 10px;
@@ -118,7 +126,7 @@ label.value {
 input {
   height: 2em;
   font-size: 1em;
-  padding-left: .4em;
+  padding-left: 0.4em;
 }
 input::placeholder {
   color: lightgray;
@@ -147,13 +155,13 @@ input::placeholder {
   overflow: hidden;
   width: 22em;
 }
-.transaction-groups .total{
+.transaction-groups .total {
   float: right;
   margin-top: 0.4em;
   margin-right: 0.5em;
-  font-size:18px;
+  font-size: 18px;
 }
-.transaction-groups .totalheader{
+.transaction-groups .totalheader {
   float: left;
 }
 .balance-area {
@@ -167,23 +175,23 @@ input::placeholder {
   position: relative;
 }
 .expense-text {
-  color:#f44336;
+  color: #f44336;
   font-weight: bold;
 }
-.income-text{
-  color:#4CAF50;
+.income-text {
+  color: #4caf50;
   font-weight: bold;
 }
-.saving-text{
-  color:#ff9800;
+.saving-text {
+  color: #ff9800;
   font-weight: bold;
 }
-.balance-text{
-  color:#2196F3;
+.balance-text {
+  color: #2196f3;
   font-weight: bold;
 }
 .pickerwrapper {
-  margin-bottom:2em;
+  margin-bottom: 2em;
 }
 
 nav {
@@ -201,7 +209,7 @@ nav ul {
 
 nav li {
   float: left;
-  border-right: 1px solid #B5D9EC;
+  border-right: 1px solid #b5d9ec;
 }
 
 nav li:last-child {
@@ -210,7 +218,7 @@ nav li:last-child {
 
 nav li a {
   display: block;
-  color: #B5D9EC;
+  color: #b5d9ec;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
@@ -230,7 +238,7 @@ nav li a:hover:not(.active) {
 
 .login-container .success-message {
   padding: 0 16px;
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 .login-container .error-message {
@@ -256,4 +264,8 @@ nav li a:hover:not(.active) {
 
 .hidden {
   display: none;
+}
+
+.summary {
+  margin-top: 5em;
 }
