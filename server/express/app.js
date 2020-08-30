@@ -4,9 +4,10 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const apiRoutes = require('./routes/api');
-const authRoutes = require('./routes/auth');
+const apiRoutes = require('../routes/api');
+const authRoutes = require('../routes/auth');
 const app = express();
+const serverless = require('serverless-http');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -20,36 +21,37 @@ app.use(express.static(path.join(__dirname, 'build')));
 app.use(passport.initialize());
 
 // load passport strategies
-const localLoginStrategy = require('./passport/local-login');
+const localLoginStrategy = require('../passport/local-login');
 passport.use('local-login', localLoginStrategy);
-const localSignupStrategy = require('./passport/local-signup');
+const localSignupStrategy = require('../passport/local-signup');
 passport.use('local-signup', localSignupStrategy);
-
+const baseUrlPath =
+  process.env.NODE_ENV === 'dev' ? '' : '/.netlify/functions/server';
 // pass the authenticaion checker middleware
-const authCheckMiddleware = require('./passport/auth-check');
-app.use('/api', authCheckMiddleware);
+const authCheckMiddleware = require('../passport/auth-check');
+app.use(`${baseUrlPath}/api`, authCheckMiddleware);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // register app routes
-app.use('/api', apiRoutes);
-app.use('/auth', authRoutes);
+app.use(`${baseUrlPath}/api`, apiRoutes);
+app.use(`${baseUrlPath}/auth`, authRoutes);
 
 app.get('*', (req, res) => {
   res.sendFile('build/index.html', { root: global });
 });
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -60,3 +62,4 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+module.exports.handler = serverless(app);
