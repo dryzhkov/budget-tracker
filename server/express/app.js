@@ -32,7 +32,7 @@ const authCheckMiddleware = require('../passport/auth-check');
 app.use(`${baseUrlPath}/api`, authCheckMiddleware);
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, `${baseUrlPath}/views`));
 app.set('view engine', 'jade');
 
 // register app routes
