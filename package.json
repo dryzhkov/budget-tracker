@@ -11,8 +11,6 @@
     "jade": "^1.11.0",
     "material-ui": "^0.20.0",
     "moment": "^2.20.1",
-    "mongodb": "^2.2.31",
-    "mongoose": "^4.11.5",
     "morgan": "^1.9.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -21,6 +19,7 @@
   },
   "devDependencies": {
     "concurrently": "^3.5.0",
+    "dotenv-webpack": "^1.5.7",
     "enzyme": "^3.10.0",
     "lodash": "^4.17.14",
     "nodemon": "^1.19.1",
@@ -32,7 +31,8 @@
     "start-web-only": "react-scripts start",
     "build": "react-scripts build && mv build server",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:prod": "react-scripts build; cd server; yarn install"
   },
   "proxy": "http://localhost:3001"
 }

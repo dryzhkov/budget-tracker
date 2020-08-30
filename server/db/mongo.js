@@ -1,20 +1,17 @@
 const mongoose = require('mongoose');
-const env = require('../env/environment-prod');
+require('dotenv').config();
 
 mongoose.Promise = global.Promise;
-
-// URL format: 'mongodb://username:password@host:port/database?options...'
-const mongoUri = `mongodb://dvm5074.cloudapp.net:${env.port}/budget`;
+const { MONGODB_USER, MONGODB_PSWD, MONGODB_NAME, MONGODB_URI } = process.env;
+const mongoURL = `mongodb+srv://${MONGODB_USER}:${MONGODB_PSWD}@${MONGODB_URI}/${MONGODB_NAME}?retryWrites=true&w=majority`;
 
 function connect() {
-  return mongoose.connect(mongoUri, {
-    useMongoClient: true,
-    user: env.user,
-    pass: env.pwd
+  return mongoose.connect(mongoURL, {
+    useNewUrlParser: true,
   });
 }
 
 module.exports = {
   connect,
-  mongoose
-}
+  mongoose,
+};

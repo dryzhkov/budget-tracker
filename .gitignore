@@ -10,6 +10,7 @@ server/node_modules
 # production
 /server/build
 deploy.sh
+/build
 
 # misc
 .DS_Store
@@ -27,3 +28,5 @@ yarn-error.log*
 
 # vscode
 /.vscode/
+
+.env
