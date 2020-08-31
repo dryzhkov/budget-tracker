@@ -6,14 +6,14 @@ import Header from './Header';
 import LoginPage from './LoginPage';
 import Auth from '../common/Auth';
 
-const App = (props) => {
+const App = () => {
   const handleLogout = () => {
     Auth.deauthenticateUser();
     // change the current URL to /
     return <Redirect to="/login" />;
   };
 
-  if (window.location.pathname !== "/login" && !Auth.isUserAuthenticated()) {
+  if (window.location.pathname !== '/login' && !Auth.isUserAuthenticated()) {
     return <Redirect to="/login" />;
   }
 
