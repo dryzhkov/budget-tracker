@@ -68,7 +68,7 @@
     "start-web-only": "node scripts/start.js",
     "build": "node scripts/build.js && mv build server",
     "test": "node scripts/test.js --env=jsdom",
-    "build:prod": "node scripts/build.js; cd server; yarn install"
+    "build:prod": "node ./scripts/create-env.js; node scripts/build.js; cd server; yarn install"
   },
   "proxy": "http://localhost:3001",
   "jest": {
