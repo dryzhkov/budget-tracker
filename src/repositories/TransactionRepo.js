@@ -1,7 +1,7 @@
 import Auth from '../common/Auth';
 
 const baseAPI =
-  process.env.NODE_ENV === 'dev' ? '/api' : '/.netlify/functions/server/auth';
+  process.env.NODE_ENV === 'dev' ? '/api' : '/.netlify/functions/app/auth';
 
 const getCommonHeaders = () => {
   return {

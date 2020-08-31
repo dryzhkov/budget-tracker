@@ -1,5 +1,5 @@
 const baseAPI =
-  process.env.NODE_ENV === 'dev' ? '/auth' : '/.netlify/functions/server/auth';
+  process.env.NODE_ENV === 'dev' ? '/auth' : '/.netlify/functions/app/auth';
 const AuthRepo = {
   login(username, password) {
     return new Promise((resolve, reject) => {
