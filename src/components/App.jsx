@@ -1,5 +1,10 @@
 import React from 'react';
-import { Route, Switch, Redirect } from 'react-router';
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from 'react-router-dom';
 import BudgetList from './BudgetList';
 import Summary from './Summary';
 import Header from './Header';
@@ -13,20 +18,20 @@ const App = () => {
     return <Redirect to="/login" />;
   };
 
-  if (window.location.pathname !== '/login' && !Auth.isUserAuthenticated()) {
-    return <Redirect to="/login" />;
-  }
+  // if (window.location.pathname !== '/login' && !Auth.isUserAuthenticated()) {
+  //   return <Redirect to="/login" />;
+  // }
 
   return (
-    <div>
+    <Router>
       <Header />
       <Switch>
         <Route exact path="/" component={BudgetList} />
-        <Route path="/summary/:year" component={Summary} />
-        <Route path="/login" component={LoginPage} />
+        <Route exact path="/summary/:year" component={Summary} />
+        <Route exact path="/login" component={LoginPage} />
         <Route path="/logout" component={handleLogout} />
       </Switch>
-    </div>
+    </Router>
   );
 };
 

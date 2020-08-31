@@ -1,12 +1,14 @@
-import React, { Component } from "react";
-import Transaction from "./Transaction";
-import EditTransaction from "./EditTransaction";
-import PayDatePicker from "./PayDatePicker";
-import MessageBar from "./MessageBar";
-import * as Utils from "../common/Utils";
-import TransactionRepo from "../repositories/TransactionRepo";
-import { BudgetContext } from "./budget-context";
-import Summary from "./Summary";
+import React, { Component } from 'react';
+import Transaction from './Transaction';
+import EditTransaction from './EditTransaction';
+import PayDatePicker from './PayDatePicker';
+import MessageBar from './MessageBar';
+import Auth from '../common/Auth';
+import * as Utils from '../common/Utils';
+import TransactionRepo from '../repositories/TransactionRepo';
+import { BudgetContext } from './budget-context';
+import Summary from './Summary';
+import { Redirect } from 'react-router-dom';
 
 class BudgetList extends Component {
   constructor() {
@@ -18,12 +20,12 @@ class BudgetList extends Component {
       budget: {
         totalIncome: 0,
         totalExpense: 0,
-        totalSaving: 0
+        totalSaving: 0,
       },
       selectedPayDate: BudgetContext.getSelectedPayDay(),
-      messageText: "",
+      messageText: '',
       showMessageBar: false,
-      uniqueCategories: []
+      uniqueCategories: [],
     };
 
     this.handleSelect = this.handleSelect.bind(this);
@@ -41,10 +43,10 @@ class BudgetList extends Component {
   }
 
   fetchTransactions(payDate) {
-    TransactionRepo.get(payDate).then(result => {
+    TransactionRepo.get(payDate).then((result) => {
       this.setState({
         transactions: result,
-        budget: Utils.calculateBudget(result)
+        budget: Utils.calculateBudget(result),
       });
     });
   }
@@ -52,7 +54,7 @@ class BudgetList extends Component {
   handleSelect(transaction) {
     this.setState({
       selectedTransaction: transaction,
-      addingNew: false
+      addingNew: false,
     });
   }
 
@@ -64,7 +66,7 @@ class BudgetList extends Component {
     let eventName = event.target.name;
     let eventValue = event.target.value;
 
-    if (eventName === "amount") {
+    if (eventName === 'amount') {
       eventValue = Number.parseFloat(eventValue);
     }
 
@@ -76,7 +78,7 @@ class BudgetList extends Component {
   handleEnableAddMode(type) {
     this.setState({
       addingNew: true,
-      selectedTransaction: { id: 0, type: type, amount: 0, category: "" }
+      selectedTransaction: { id: 0, type: type, amount: 0, category: '' },
     });
   }
 
@@ -84,13 +86,13 @@ class BudgetList extends Component {
     if (this.state.addingNew) {
       const transaction = Object.assign(
         {
-          payDate: this.state.selectedPayDate
+          payDate: this.state.selectedPayDate,
         },
         this.state.selectedTransaction
       );
 
       TransactionRepo.create(transaction)
-        .then(result => {
+        .then((result) => {
           const transactions = this.state.transactions.concat([result]);
 
           let budget = Utils.calculateBudget(transactions);
@@ -98,13 +100,13 @@ class BudgetList extends Component {
             transactions: transactions,
             selectedTransaction: null,
             addingNew: false,
-            budget: budget
+            budget: budget,
           });
 
-          this.displayMessage("Transaction has been saved!", "success");
+          this.displayMessage('Transaction has been saved!', 'success');
         })
-        .catch(err => {
-          this.displayMessage("Unable to save.", "error");
+        .catch((err) => {
+          this.displayMessage('Unable to save.', 'error');
           console.log(err);
         });
     } else {
@@ -112,10 +114,10 @@ class BudgetList extends Component {
         .then(() => {
           let budget = Utils.calculateBudget(this.state.transactions);
           this.setState({ selectedTransaction: null, budget });
-          this.displayMessage("Updated!", "success");
+          this.displayMessage('Updated!', 'success');
         })
-        .catch(err => {
-          this.displayMessage("Unable to update.", "error");
+        .catch((err) => {
+          this.displayMessage('Unable to update.', 'error');
           console.log(err);
         });
     }
@@ -128,12 +130,12 @@ class BudgetList extends Component {
       .then(() => {
         let transactions = this.state.transactions;
 
-        transactions = transactions.filter(t => t.id !== transaction.id);
+        transactions = transactions.filter((t) => t.id !== transaction.id);
 
         let budget = Utils.calculateBudget(transactions);
         this.setState({
           transactions,
-          budget
+          budget,
         });
 
         if (
@@ -143,11 +145,11 @@ class BudgetList extends Component {
           this.setState({ selectedTransaction: null });
         }
       })
-      .catch(error => console.log(error));
+      .catch((error) => console.log(error));
   }
 
   renderTransactionsByType(type) {
-    return this.state.transactions.map(transaction => {
+    return this.state.transactions.map((transaction) => {
       if (transaction.type === type) {
         return (
           <Transaction
@@ -159,7 +161,7 @@ class BudgetList extends Component {
           />
         );
       } else {
-        return "";
+        return '';
       }
     });
   }
@@ -167,7 +169,7 @@ class BudgetList extends Component {
   handleDateChange(value) {
     if (value !== this.state.selectedPayDate) {
       this.setState({
-        selectedPayDate: value
+        selectedPayDate: value,
       });
 
       BudgetContext.setSelectedPayDate(value);
@@ -178,7 +180,7 @@ class BudgetList extends Component {
   closeMessageBar() {
     this.setState({
       showMessageBar: false,
-      messageText: ""
+      messageText: '',
     });
   }
 
@@ -186,7 +188,7 @@ class BudgetList extends Component {
     this.setState({
       showMessageBar: true,
       messageText: msg,
-      messageType: type
+      messageType: type,
     });
   }
 
@@ -194,7 +196,7 @@ class BudgetList extends Component {
     let { period, year } = payDate;
     const summary = {
       paydates: [],
-      years: [year]
+      years: [year],
     };
 
     for (let i = 0; i < count; i++) {
@@ -211,6 +213,10 @@ class BudgetList extends Component {
   }
 
   render() {
+    if (!Auth.isUserAuthenticated()) {
+      return <Redirect to="/login" />;
+    }
+
     const summary = this.summaryPaydates(BudgetContext.getSelectedPayDay(), 4);
 
     return (
@@ -224,7 +230,7 @@ class BudgetList extends Component {
             {Utils.formatAsCurrency(this.state.budget.totalIncome)}
           </div>
           <ul className="transactions">
-            {this.renderTransactionsByType("income")}
+            {this.renderTransactionsByType('income')}
           </ul>
         </div>
         <div className="transaction-groups">
@@ -233,7 +239,7 @@ class BudgetList extends Component {
             {Utils.formatAsCurrency(this.state.budget.totalExpense)}
           </div>
           <ul className="transactions">
-            {this.renderTransactionsByType("expense")}
+            {this.renderTransactionsByType('expense')}
           </ul>
         </div>
         <div className="transaction-groups">
@@ -242,7 +248,7 @@ class BudgetList extends Component {
             {Utils.formatAsCurrency(this.state.budget.totalSaving)}
           </div>
           <ul className="transactions">
-            {this.renderTransactionsByType("saving")}
+            {this.renderTransactionsByType('saving')}
           </ul>
         </div>
         <div className="transaction-groups balance-area">
@@ -257,19 +263,19 @@ class BudgetList extends Component {
         </div>
 
         <div className="editarea">
-          <button onClick={() => this.handleEnableAddMode("income")}>
+          <button onClick={() => this.handleEnableAddMode('income')}>
             + Income
           </button>
-          <button onClick={() => this.handleEnableAddMode("expense")}>
+          <button onClick={() => this.handleEnableAddMode('expense')}>
             + Expense
           </button>
-          <button onClick={() => this.handleEnableAddMode("saving")}>
+          <button onClick={() => this.handleEnableAddMode('saving')}>
             + Saving
           </button>
           <EditTransaction
             addingNew={this.state.addingNew}
             selectedTransaction={this.state.selectedTransaction}
-            excludedSuggestions={this.state.transactions.map(t => {
+            excludedSuggestions={this.state.transactions.map((t) => {
               return { category: t.category, type: t.type };
             })}
             onChange={this.handleOnChange}
