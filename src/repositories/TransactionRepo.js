@@ -1,29 +1,30 @@
 import Auth from '../common/Auth';
 
-const baseAPI = '/api';
+const baseAPI =
+  process.env.NODE_ENV === 'dev' ? '/api' : '/.netlify/functions/server/auth';
 
 const getCommonHeaders = () => {
   return {
-    'Authorization': `bearer ${Auth.getToken()}`,
-    'Accept': 'application/json'
-  }
+    Authorization: `bearer ${Auth.getToken()}`,
+    Accept: 'application/json',
+  };
 };
 
 const TransactionRepo = {
   get(payDate) {
     return new Promise((resolve, reject) => {
       fetch(`${baseAPI}/transactions/${payDate.toString()}`, {
-          method: 'GET',
-          headers: getCommonHeaders()
-        })
-        .then(response => {
+        method: 'GET',
+        headers: getCommonHeaders(),
+      })
+        .then((response) => {
           if (!response.ok) {
             throw Error(response.statusText);
           }
           return response.json();
         })
-        .then(json => resolve(json))
-        .catch(err => {
+        .then((json) => resolve(json))
+        .catch((err) => {
           reject(err);
         });
     });
@@ -36,11 +37,11 @@ const TransactionRepo = {
       fetch(`${baseAPI}/transaction`, {
         method: 'POST',
         body: JSON.stringify(transaction),
-        headers: headers
+        headers: headers,
       })
-        .then(result => result.json())
-        .then(json => resolve(json))
-        .catch(err => {
+        .then((result) => result.json())
+        .then((json) => resolve(json))
+        .catch((err) => {
           reject(err);
         });
     });
@@ -53,12 +54,12 @@ const TransactionRepo = {
       fetch(`${baseAPI}/transaction`, {
         method: 'PUT',
         body: JSON.stringify(transaction),
-        headers: headers
+        headers: headers,
       })
-        .then(result => {
+        .then((result) => {
           resolve(result);
         })
-        .catch(err => {
+        .catch((err) => {
           reject(err);
         });
     });
@@ -66,10 +67,13 @@ const TransactionRepo = {
 
   destroy(transaction) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/transaction/${transaction.id}`, { method: 'DELETE', headers: getCommonHeaders() })
-        .then(response => response.json())
-        .then(json => resolve(json))
-        .catch(err => {
+      fetch(`${baseAPI}/transaction/${transaction.id}`, {
+        method: 'DELETE',
+        headers: getCommonHeaders(),
+      })
+        .then((response) => response.json())
+        .then((json) => resolve(json))
+        .catch((err) => {
           reject(err);
         });
     });
@@ -77,10 +81,13 @@ const TransactionRepo = {
 
   getAll(year) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/transactions/${year}/summary`, { method: 'GET', headers: getCommonHeaders() })
-        .then(response => response.json())
-        .then(json => resolve(json))
-        .catch(err => {
+      fetch(`${baseAPI}/transactions/${year}/summary`, {
+        method: 'GET',
+        headers: getCommonHeaders(),
+      })
+        .then((response) => response.json())
+        .then((json) => resolve(json))
+        .catch((err) => {
           reject(err);
         });
     });
@@ -88,14 +95,17 @@ const TransactionRepo = {
 
   getUniqueCategories(year) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/transactions/${year}/categories`, { method: 'GET', headers: getCommonHeaders() })
-        .then(response => response.json())
-        .then(json => resolve(json))
-        .catch(err => {
+      fetch(`${baseAPI}/transactions/${year}/categories`, {
+        method: 'GET',
+        headers: getCommonHeaders(),
+      })
+        .then((response) => response.json())
+        .then((json) => resolve(json))
+        .catch((err) => {
           reject(err);
         });
     });
-  }
+  },
 };
 
 export default TransactionRepo;
