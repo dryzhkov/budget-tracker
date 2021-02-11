@@ -62,9 +62,9 @@
     "react-test-renderer": "^16.8.6"
   },
   "scripts": {
-    "start": "cross-env NODE_ENV=dev npm-run-all --parallel start:client start:server",
+    "start": "cross-env NODE_ENV=development npm-run-all --parallel start:client start:server",
     "start:client": "node scripts/start.js",
-    "start:server": "cross-env NODE_ENV=dev nodemon server/server-local.js",
+    "start:server": "cross-env NODE_ENV=development nodemon server/server-local.js",
     "start-web-only": "node scripts/start.js",
     "build": "rm -rf server/build; node scripts/build.js && mv build server",
     "test": "node scripts/test.js --env=jsdom",

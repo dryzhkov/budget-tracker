@@ -6,7 +6,7 @@ import {
   Redirect,
 } from 'react-router-dom';
 import BudgetList from './BudgetList';
-import Summary from './Summary';
+import SummaryPage from './SummaryPage';
 import Header from './Header';
 import LoginPage from './LoginPage';
 import Auth from '../common/Auth';
@@ -27,7 +27,7 @@ const App = () => {
       <Header />
       <Switch>
         <Route exact path="/" component={BudgetList} />
-        <Route exact path="/summary/:year" component={Summary} />
+        <Route exact path="/summary" component={SummaryPage} />
         <Route exact path="/login" component={LoginPage} />
         <Route path="/logout" component={handleLogout} />
       </Switch>

@@ -26,7 +26,8 @@ passport.use('local-login', localLoginStrategy);
 const localSignupStrategy = require('../passport/local-signup');
 passport.use('local-signup', localSignupStrategy);
 const baseUrlPath =
-  process.env.NODE_ENV === 'dev' ? '' : '/.netlify/functions/app';
+  process.env.NODE_ENV === 'development' ? '' : '/.netlify/functions/app';
+
 // pass the authenticaion checker middleware
 const authCheckMiddleware = require('../passport/auth-check');
 app.use(`${baseUrlPath}/api`, authCheckMiddleware);

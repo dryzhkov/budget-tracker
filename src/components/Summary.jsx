@@ -27,8 +27,7 @@ class Summary extends React.Component {
   }
 
   componentWillMount() {
-    const years = this.props.years || [this.props.match.params.year];
-    this.fetchAndDisplay(years);
+    this.fetchAndDisplay(this.props.years);
   }
 
   componentWillReceiveProps(nextProps) {

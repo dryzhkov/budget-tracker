@@ -1,7 +1,10 @@
 const baseAPI =
-  process.env.NODE_ENV === 'dev' ? '/auth' : '/.netlify/functions/app/auth';
+  process.env.NODE_ENV === 'development'
+    ? '/auth'
+    : '/.netlify/functions/app/auth';
 const AuthRepo = {
   login(username, password) {
+    console.log('baseAPI', baseAPI, process.env.NODE_ENV);
     return new Promise((resolve, reject) => {
       const data = {
         email: username,
