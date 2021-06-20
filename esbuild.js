@@ -2,18 +2,20 @@ const { build } = require('esbuild');
 const fs = require('fs-extra');
 
 const generateBuild = async () => {
+    console.log('Generating build, mode: ' + process.env.NODE_ENV);
     await fs.rmdirSync('/build', { recursive: true });
-  
+    
     await build({
       entryPoints: ['src/index.tsx'],
       outdir: 'build',
-      minify: true,
+      minify: process.env.NODE_ENV === 'production',
+      watch: process.env.NODE_ENV === 'development',
       bundle: true,
       sourcemap: true,
       target: ['chrome58', 'firefox57', 'edge16'],
       loader: { ".svg": "dataurl", ".png": "dataurl"},
       define: {
-        'process.env.NODE_ENV': "'production'",
+        'process.env.NODE_ENV': `'${process.env.NODE_ENV}'`,
       }
     }).catch(() => process.exit(1));
 

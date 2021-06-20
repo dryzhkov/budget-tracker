@@ -6,7 +6,8 @@
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
     "esbuild": "node ./esbuild.js",
-    "build": "npm run tsc && npm run esbuild",
+    "build:prod": "npm run tsc && cross-env NODE_ENV=production npm run esbuild",
+    "build:dev": "npm run tsc && cross-env NODE_ENV=development npm run esbuild",
     "esbuild:old": "esbuild src/index.tsx --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16 --outfile=dist/esbuild/index.js",
     "esbuild:dev": "esbuild src/index.tsx --bundle --outfile=dist/esbuild/index.js",
     "esbuild:watch": "esbuild src/index.tsx --bundle --watch --outfile=dist/esbuild/index.js"
@@ -32,6 +33,7 @@
     "@types/fs-extra": "^9.0.11",
     "@types/react": "^17.0.11",
     "@types/react-dom": "^17.0.8",
+    "cross-env": "^7.0.3",
     "esbuild": "^0.12.9",
     "fs-extra": "^10.0.0",
     "typescript": "^4.3.4"
