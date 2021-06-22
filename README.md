@@ -2,6 +2,6 @@
 
 npm run build:dev or build:prod
 
-cd /build
+cd /api && npm run build
 
-swa start
+swa start build --api api

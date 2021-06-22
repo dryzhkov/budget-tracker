@@ -12,7 +12,7 @@ const generateBuild = async () => {
       watch: process.env.NODE_ENV === 'development',
       bundle: true,
       sourcemap: true,
-      target: ['chrome58', 'firefox57', 'edge16'],
+      target: ['chrome58'],
       loader: { ".svg": "dataurl", ".png": "dataurl"},
       define: {
         'process.env.NODE_ENV': `'${process.env.NODE_ENV}'`,
