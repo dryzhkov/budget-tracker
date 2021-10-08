@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
-import netlify from 'netlify-auth-providers';
+// import netlify from 'netlify-auth-providers';
+
+import netlifyIdentity from 'netlify-identity-widget';
+
+netlifyIdentity.init({
+  // container: '#netlify-modal', // defaults to document.body
+  locale: 'en', // defaults to 'en'
+});
 
 interface Customer {
   id: number;
@@ -9,23 +16,37 @@ interface Customer {
   lastName: string;
 }
 
+// Bind to events
+netlifyIdentity.on('init', (user) => console.log('init', user));
+netlifyIdentity.on('login', (user) => console.log('login', user));
+netlifyIdentity.on('logout', () => console.log('Logged out'));
+netlifyIdentity.on('error', (err) => console.error('Error', err));
+netlifyIdentity.on('open', () => console.log('Widget opened'));
+netlifyIdentity.on('close', () => console.log('Widget closed'));
+
 const App = () => {
+  const user = netlifyIdentity.currentUser();
+
+  console.log('user', user);
   const [data, setData] = useState<Customer[]>([]);
 
-  const [auth, setAuth] = useState<any>({});
+  // const [auth, setAuth] = useState<any>({});
 
   const handleSignoutClick = () => {
-    window.localStorage.removeItem('github-token');
-    setAuth({ token: null, error: null });
+    netlifyIdentity.logout();
+    // window.localStorage.removeItem('github-token');
+    // setAuth({ token: null, error: null });
   };
   const handleLoginClick = async () => {
-    const data = await authWithGitHub().catch((error) => {
-      console.log('Oh no', error);
-      setAuth({ error, token: null });
-    });
-    console.log('auth data', data);
-    window.localStorage.setItem('github-token', (data as any).token);
-    setAuth({ token: (data as any).token, error: null });
+    // const data = await authWithGitHub().catch((error) => {
+    //   console.log('Oh no', error);
+    //   setAuth({ error, token: null });
+    // });
+    // console.log('auth data', data);
+    netlifyIdentity.open();
+    // const jwt = await netlifyIdentity.refresh();
+    // window.localStorage.setItem('github-token', (data as any).token);
+    // setAuth({ token: null, error: null });
   };
 
   const fetchData = async () => {
@@ -33,7 +54,7 @@ const App = () => {
       await fetch('/.netlify/functions/customers-read-all', {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${auth.token}`,
+          Authorization: `Bearer ${user?.token?.access_token}`,
         },
       })
     ).json();
@@ -52,14 +73,17 @@ const App = () => {
   return (
     <>
       <div>
-        {auth.token ? (
+        {user?.token ? (
           <section>
-            <p>Your token is: {auth.token}</p>
+            <p>Your token is: {JSON.stringify(user.token)}</p>
             <button onClick={handleSignoutClick}>Sign Out</button>
             <button onClick={fetchData}>Fetch data</button>
           </section>
         ) : (
-          <button onClick={handleLoginClick}>Sign In Here!</button>
+          <section>
+            <button onClick={handleLoginClick}>Sign In Here!</button>
+            <button onClick={fetchData}>Fetch data</button>
+          </section>
         )}
       </div>
       {data?.map((c) => (
@@ -76,23 +100,6 @@ function getId(item: any) {
     return null;
   }
   return item.ref['@ref'].id;
-}
-
-async function authWithGitHub() {
-  return new Promise((resolve, reject) => {
-    const authenticator = new netlify({
-      site_id: '5bec16cd-560a-4046-9c9b-1eb23e2561c3',
-    });
-    authenticator.authenticate(
-      { provider: 'github', scope: 'public_repo,read:org,read:user' },
-      function (err: Error, data: any) {
-        if (err) {
-          reject(err);
-        }
-        resolve(data);
-      }
-    );
-  });
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
