@@ -6,10 +6,11 @@
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
     "start": "netlify dev",
-    "build": "npm run build:prod",
-    "build:prod": "npm run tsc && cross-env NODE_ENV=production node ./esbuild.js",
     "start:app": "npm run tsc && cross-env NODE_ENV=development node ./esbuild.js",
-    "build:server": "netlify-lambda serve functions"
+    "start:functions": "netlify-lambda serve src/functions",
+    "build": "netlify build",
+    "build:app": "npm run tsc && cross-env NODE_ENV=production node ./esbuild.js",
+    "build:functions": "netlify-lambda build src/functions"
   },
   "repository": {
     "type": "git",
