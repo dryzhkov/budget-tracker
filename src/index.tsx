@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-
-// import netlify from 'netlify-auth-providers';
-
 import netlifyIdentity from 'netlify-identity-widget';
 
 netlifyIdentity.init({
@@ -26,27 +23,13 @@ netlifyIdentity.on('close', () => console.log('Widget closed'));
 
 const App = () => {
   const user = netlifyIdentity.currentUser();
-
-  console.log('user', user);
   const [data, setData] = useState<Customer[]>([]);
-
-  // const [auth, setAuth] = useState<any>({});
 
   const handleSignoutClick = () => {
     netlifyIdentity.logout();
-    // window.localStorage.removeItem('github-token');
-    // setAuth({ token: null, error: null });
   };
   const handleLoginClick = async () => {
-    // const data = await authWithGitHub().catch((error) => {
-    //   console.log('Oh no', error);
-    //   setAuth({ error, token: null });
-    // });
-    // console.log('auth data', data);
     netlifyIdentity.open();
-    // const jwt = await netlifyIdentity.refresh();
-    // window.localStorage.setItem('github-token', (data as any).token);
-    // setAuth({ token: null, error: null });
   };
 
   const fetchData = async () => {
@@ -58,7 +41,6 @@ const App = () => {
         },
       })
     ).json();
-    console.log(results);
 
     const customers = results.map((r: any) => {
       return {
