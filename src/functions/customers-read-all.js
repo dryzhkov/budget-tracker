@@ -5,25 +5,20 @@ const { client } = require('./db/client');
 const checkAuth = require('./auth/checkAuth');
 
 exports.handler = (event, context, callback) => {
-  console.log('Function `customers-read-all` invoked...');
-
   checkAuth(context)
-    .then((user) => {
-      console.log('user', user);
+    .then((_) => {
       return client
-        .query(q.Paginate(q.Match(q.Ref('indexes/all_customers'))))
-        .then((response) => {
-          const customersRef = response.data;
-          // create new query out of todo refs. http://bit.ly/2LG3MLg
-          const getAllTodoDataQuery = customersRef.map((ref) => {
-            return q.Get(ref);
-          });
-          // then query the refs
-          return client.query(getAllTodoDataQuery).then((ret) => {
-            return callback(null, {
-              statusCode: 200,
-              body: JSON.stringify(ret),
-            });
+        .query(
+          q.Map(
+            q.Paginate(q.Match(q.Index('all_customers'))),
+            q.Lambda('cusomerRef', q.Get(q.Var('cusomerRef')))
+          )
+        )
+        .then((results) => {
+          const { data } = results;
+          return callback(null, {
+            statusCode: 200,
+            body: JSON.stringify(data),
           });
         })
         .catch((error) => {
