@@ -7,10 +7,13 @@ netlifyIdentity.init({
   locale: 'en', // defaults to 'en'
 });
 
-interface Customer {
+interface Paycheck {
   id: number;
-  firstName: string;
-  lastName: string;
+  date: string;
+  income: {
+    title: string;
+    amount: number;
+  }[];
 }
 
 // Bind to events
@@ -23,7 +26,7 @@ netlifyIdentity.on('close', () => console.log('Widget closed'));
 
 const App = () => {
   const user = netlifyIdentity.currentUser();
-  const [data, setData] = useState<Customer[]>([]);
+  const [data, setData] = useState<Paycheck[]>([]);
 
   const handleSignoutClick = () => {
     netlifyIdentity.logout();
@@ -34,7 +37,7 @@ const App = () => {
 
   const fetchData = async () => {
     const results = await (
-      await fetch('/.netlify/functions/customers-read-all', {
+      await fetch(`/.netlify/functions/all-paychecks-by-year?year=2021`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user?.token?.access_token}`,
@@ -42,14 +45,14 @@ const App = () => {
       })
     ).json();
 
-    const customers = results.map((r: any) => {
+    const paychecks: Paycheck[] = results.map((r: any) => {
       return {
         id: getId(r),
-        firstName: r.data.firstName,
-        lastName: r.data.lastName,
+        date: r.data.date,
+        income: r.data.income,
       };
     });
-    setData(customers);
+    setData(paychecks);
   };
 
   return (
@@ -70,7 +73,7 @@ const App = () => {
       </div>
       {data?.map((c) => (
         <div key={c.id}>
-          {c.firstName} {c.lastName}
+          Date: {c.date} Income: {JSON.stringify(c.income)}
         </div>
       ))}
     </>

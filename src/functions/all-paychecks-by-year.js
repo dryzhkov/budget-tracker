@@ -7,11 +7,14 @@ const checkAuth = require('./auth/checkAuth');
 exports.handler = (event, context, callback) => {
   checkAuth(context)
     .then((_) => {
+      const { year } = event.queryStringParameters;
+      console.log('year', year);
+
       return client
         .query(
           q.Map(
-            q.Paginate(q.Match(q.Index('all_customers'))),
-            q.Lambda('cusomerRef', q.Get(q.Var('cusomerRef')))
+            q.Paginate(q.Match(q.Index('all_paychecks_by_year'), year)),
+            q.Lambda('paycheckRef', q.Get(q.Var('paycheckRef')))
           )
         )
         .then((results) => {

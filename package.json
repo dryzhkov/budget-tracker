@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
+    "clean": "rm -rf build functions",
     "start": "run-p start:**",
     "start:dev": "netlify dev",
     "start:app": "npm run tsc && cross-env NODE_ENV=development node ./esbuild.js",
