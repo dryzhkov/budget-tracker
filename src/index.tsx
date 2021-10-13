@@ -1,12 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import netlifyIdentity from 'netlify-identity-widget';
-
-netlifyIdentity.init({
-  // container: '#netlify-modal', // defaults to document.body
-  locale: 'en', // defaults to 'en'
-});
-
+import { Auth0Provider } from '@auth0/auth0-react';
+import { useAuth0 } from '@auth0/auth0-react';
 interface Paycheck {
   id: number;
   date: string;
@@ -17,30 +12,31 @@ interface Paycheck {
 }
 
 // Bind to events
-netlifyIdentity.on('init', (user) => console.log('init', user));
-netlifyIdentity.on('login', (user) => console.log('login', user));
-netlifyIdentity.on('logout', () => console.log('Logged out'));
-netlifyIdentity.on('error', (err) => console.error('Error', err));
-netlifyIdentity.on('open', () => console.log('Widget opened'));
-netlifyIdentity.on('close', () => console.log('Widget closed'));
-
 const App = () => {
-  const user = netlifyIdentity.currentUser();
   const [data, setData] = useState<Paycheck[]>([]);
+  const {
+    loginWithRedirect,
+    logout,
+    getAccessTokenSilently,
+    isAuthenticated,
+    isLoading,
+    user,
+  } = useAuth0();
 
   const handleSignoutClick = () => {
-    netlifyIdentity.logout();
+    logout();
   };
   const handleLoginClick = async () => {
-    netlifyIdentity.open();
+    loginWithRedirect();
   };
 
   const fetchData = async () => {
+    const accessToken = await getAccessTokenSilently();
     const results = await (
       await fetch(`/.netlify/functions/all-paychecks-by-year?year=2021`, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${user?.token?.access_token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       })
     ).json();
@@ -55,12 +51,21 @@ const App = () => {
     setData(paychecks);
   };
 
+  if (isLoading) {
+    return <div>Loading ...</div>;
+  }
+
   return (
     <>
       <div>
-        {user?.token ? (
+        {isAuthenticated && user ? (
           <section>
-            <p>Your token is: {JSON.stringify(user.token)}</p>
+            <p>Your token is: {JSON.stringify(user)}</p>
+            <div>
+              <img src={user.picture} alt={user.name} />
+              <h2>{user.name}</h2>
+              <p>{user.email}</p>
+            </div>
             <button onClick={handleSignoutClick}>Sign Out</button>
             <button onClick={fetchData}>Fetch data</button>
           </section>
@@ -87,4 +92,13 @@ function getId(item: any) {
   return item.ref['@ref'].id;
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+  <Auth0Provider
+    domain="dimaryz.auth0.com"
+    clientId="ehnorKu18hGNn09pl5MzItqPYciDl7UX"
+    redirectUri={window.location.origin}
+  >
+    <App />
+  </Auth0Provider>,
+  document.getElementById('root')
+);
