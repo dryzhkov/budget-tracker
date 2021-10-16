@@ -23,8 +23,11 @@
   },
   "homepage": "https://github.com/dryzhkov/budget-tracker#readme",
   "dependencies": {
+    "@apollo/client": "^3.4.16",
+    "@apollo/react-hooks": "^4.0.0",
     "@auth0/auth0-react": "^1.8.0",
     "faunadb": "^4.4.1",
+    "graphql": "^15.6.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
