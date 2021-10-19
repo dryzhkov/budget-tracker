@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { AuthProvider } from "./context/AuthProvider";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -13,7 +14,9 @@ ReactDOM.render(
       audience="https://db.fauna.com/db/ytkuu7stcynrq"
       redirectUri={window.location.origin}
     >
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </Auth0Provider>
   </React.StrictMode>,
   document.getElementById("root")

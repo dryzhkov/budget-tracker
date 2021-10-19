@@ -1,40 +1,15 @@
-import React, { useEffect, useState } from "react";
 import "./App.css";
-import { useAuth0 } from "@auth0/auth0-react";
+
 import { ApolloProvider } from "./context/ApolloProvider";
 import { Categories } from "./Categories";
+import { useAuth } from "./context/AuthProvider";
 
 function App() {
-  const [token, setToken] = useState<string | null>(null);
-  const {
-    loginWithRedirect,
-    logout,
-    getAccessTokenSilently,
-    isAuthenticated,
-    user,
-  } = useAuth0();
+  const { logout, isAuthenticated, user, login, token } = useAuth();
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      if (isAuthenticated && !token) {
-        const accessToken = await getAccessTokenSilently();
-        localStorage.setItem("token", accessToken);
-        setToken(accessToken);
-      }
-    };
+  const handleSignoutClick = () => logout();
 
-    void fetchToken();
-  }, [getAccessTokenSilently, isAuthenticated, token]);
-
-  const handleSignoutClick = () => {
-    localStorage.removeItem("token");
-    setToken(null);
-    logout();
-  };
-
-  const handleLoginClick = () => {
-    loginWithRedirect();
-  };
+  const handleLoginClick = () => login();
 
   return (
     <div className="App">
@@ -43,9 +18,7 @@ function App() {
         {token && isAuthenticated ? (
           <ApolloProvider>
             <section>
-              <p>
-                Your token is: {JSON.stringify(localStorage.getItem("token"))}
-              </p>
+              <p>Your token is: {token}</p>
               <div>
                 <img src={user?.picture} alt={user?.name} />
                 <h2>{user?.name}</h2>
