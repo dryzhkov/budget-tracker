@@ -2,11 +2,13 @@
 import { css, keyframes } from "@emotion/react";
 import { FaSpinner } from "react-icons/fa";
 import styled from "@emotion/styled/macro";
+import * as colors from "styles/colors";
 
 const spin = keyframes({
   "0%": { transform: "rotate(0deg)" },
   "100%": { transform: "rotate(360deg)" },
 });
+
 const Spinner = styled(FaSpinner)({
   animation: `${spin} 1s linear infinite`,
 });
@@ -19,6 +21,7 @@ const fullPageSpinnerStyles = css({
   justifyContent: "center",
   alignItems: "center",
 });
+
 function FullPageSpinner() {
   return (
     <div css={fullPageSpinnerStyles}>
@@ -27,4 +30,19 @@ function FullPageSpinner() {
   );
 }
 
-export { Spinner, FullPageSpinner };
+const CircleButton = styled.button({
+  borderRadius: "30px",
+  padding: "0",
+  width: "40px",
+  height: "40px",
+  lineHeight: "1",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  background: colors.base,
+  color: colors.text,
+  border: `1px solid ${colors.gray10}`,
+  cursor: "pointer",
+});
+
+export { Spinner, FullPageSpinner, CircleButton };

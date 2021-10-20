@@ -3,5 +3,4 @@
   publish = "build"
   
 [dev]
-  # Local dev command. A.k.a npm start
   port = 8000
