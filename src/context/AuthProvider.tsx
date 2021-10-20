@@ -1,5 +1,6 @@
 import { useAuth0, User } from "@auth0/auth0-react";
 import React from "react";
+import { FullPageSpinner } from "../components/lib";
 import { useLocalStorage } from "../utils/useLocalStorage";
 
 interface AuthProviderContext {
@@ -55,7 +56,7 @@ function AuthProvider(props: AuthProviderProps) {
   );
 
   if (isLoading) {
-    return <div>Loaidng...</div>;
+    return <FullPageSpinner />;
   }
 
   return <AuthContext.Provider value={value} {...props} />;

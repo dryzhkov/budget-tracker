@@ -6,7 +6,7 @@ import {
   ApolloLink,
 } from "@apollo/client";
 
-import { useAuth } from "./AuthProvider";
+import { useAuth } from "./authProvider";
 
 const httpLink = createHttpLink({
   uri: "https://graphql.us.fauna.com/graphql",
