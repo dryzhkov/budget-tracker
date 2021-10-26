@@ -1,28 +1,46 @@
+/** @jsxImportSource @emotion/react */
 import { ApolloProvider } from "../context/apolloProvider";
-import { Categories } from "./categories";
 import { useAuth } from "../context/authProvider";
 import { NavBar } from "./navBar";
 import React from "react";
 import { FullPageSpinner } from "./lib";
+import { StatementPicker } from "./statementPicker";
+import { StatementEditor } from "./statementEditor";
+import { css } from "@emotion/react";
+import * as colors from "styles/colors";
+
+const container = css`
+  padding: 10px;
+  display: flex;
+  height: calc(100vh - 50px);
+`;
+
+const left = css`
+  flex: 0 0 350px;
+  padding: 20px;
+  border: 1px solid ${colors.green};
+`;
+const right = css`
+  flex: 1;
+  padding: 20px;
+  border: 1px dashed ${colors.green};
+`;
 
 function App() {
-  const { isAuthenticated, user, token } = useAuth();
+  const { isAuthenticated, token } = useAuth();
 
   return (
     <React.Suspense fallback={<FullPageSpinner />}>
       <NavBar />
       {token && isAuthenticated ? (
         <ApolloProvider>
-          <div>
-            <section>
-              <p>Your token is: {token}</p>
-              <div>
-                <img src={user?.picture} alt={user?.name} />
-                <h2>{user?.name}</h2>
-                <p>{user?.email}</p>
-              </div>
+          <div css={container}>
+            <section css={left}>
+              <StatementPicker />
             </section>
-            <Categories />
+            <section css={right}>
+              <StatementEditor />
+            </section>
           </div>
         </ApolloProvider>
       ) : null}

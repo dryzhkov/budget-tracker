@@ -1,5 +1,6 @@
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
+import { Spinner } from "./lib";
 const CATEGORIES_QUERY = gql`
   {
     allCategories {
@@ -17,7 +18,7 @@ export function Categories() {
   const { data: results, loading, error } = useQuery(CATEGORIES_QUERY);
 
   if (loading) {
-    return <div>Loading</div>;
+    return <Spinner />;
   }
 
   if (error) {

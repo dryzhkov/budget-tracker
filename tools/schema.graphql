@@ -13,11 +13,12 @@ enum CategoryType {
 
 type Statement {
   date: String!
-  transactions: [Transaction!]
+  year: String!
+  transactions: [Transaction!] @relation
 }
 
 type Transaction {
-  statement: Statement!
+  statement: Statement
   amount: Float!
   category: Category!
 }
@@ -25,4 +26,6 @@ type Transaction {
 type Query {
   allCategories: [Category!]
   allStatements: [Statement!]
+  statementsByYear(year: String!): [Statement!]
+  statementByDate(date: String!): Statement
 }
