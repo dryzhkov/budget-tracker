@@ -11,11 +11,15 @@ import { dateToString, formatDate, getYear, stringToDate } from "utils/dates";
 import { useGetStatementsByYearQuery, Statement } from "generated/graphql";
 
 interface StatementPickerProps {
-  selectedDate: Date | null;
-  setSelectedDate: (value: Date | null) => void;
+  setSelectedStatement: (value: StatementDto | null) => void;
 }
 
-type StatementResult = Omit<Statement, "_ts" | "transactions">;
+type StatementResult = Omit<Statement, "__typename" | "_ts" | "transactions">;
+
+export type StatementDto = {
+  date: Date;
+  id?: Statement["_id"];
+};
 
 function isStatement(
   item: StatementResult | undefined | null
@@ -24,8 +28,7 @@ function isStatement(
 }
 
 export function StatementPicker({
-  selectedDate,
-  setSelectedDate,
+  setSelectedStatement,
 }: StatementPickerProps) {
   const [year, setYear] = useState<string>(getYear());
   const [pickerDate, setPickerDate] = useState<Date | null>(null);
@@ -48,7 +51,8 @@ export function StatementPicker({
     const { target } = event.nativeEvent;
     const value = target[target.selectedIndex].text;
     setYear(value);
-    setSelectedDate(null);
+    setSelectedStatement(null);
+    setPickerDate(null);
   };
 
   return (
@@ -78,7 +82,7 @@ export function StatementPicker({
         selected={pickerDate}
         onChange={(date: Date | null) => {
           setPickerDate(date);
-          setSelectedDate(date);
+          setSelectedStatement(date ? { date } : null);
         }}
       />
 
@@ -101,8 +105,11 @@ export function StatementPicker({
             return (
               <ListGroup.Item
                 action
-                onClick={(event: any) =>
-                  setSelectedDate(stringToDate(event.target.innerText))
+                onClick={() =>
+                  setSelectedStatement({
+                    id: item.key,
+                    date: stringToDate(item.date),
+                  })
                 }
                 key={item.key}
               >

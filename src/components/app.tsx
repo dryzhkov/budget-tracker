@@ -4,7 +4,7 @@ import { useAuth } from "../context/authProvider";
 import { NavBar } from "./navBar";
 import React, { useState } from "react";
 import { FullPageSpinner } from "./lib";
-import { StatementPicker } from "./statementPicker";
+import { StatementDto, StatementPicker } from "./statementPicker";
 import { StatementEditor } from "./statementEditor";
 import { css } from "@emotion/react";
 import * as colors from "styles/colors";
@@ -28,7 +28,8 @@ const right = css`
 
 function App() {
   const { isAuthenticated, token } = useAuth();
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedStatement, setSelectedStatement] =
+    useState<StatementDto | null>(null);
 
   return (
     <React.Suspense fallback={<FullPageSpinner />}>
@@ -37,13 +38,10 @@ function App() {
         <ApolloProvider>
           <div css={container}>
             <section css={left}>
-              <StatementPicker
-                selectedDate={selectedDate}
-                setSelectedDate={setSelectedDate}
-              />
+              <StatementPicker setSelectedStatement={setSelectedStatement} />
             </section>
             <section css={right}>
-              <StatementEditor date={selectedDate} />
+              <StatementEditor statement={selectedStatement} />
             </section>
           </div>
         </ApolloProvider>
