@@ -1,0 +1,12 @@
+query AllCategories {
+  allCategories {
+    data {
+      _id
+      externalUrl
+      _ts
+      type
+      title
+      archived
+    }
+  }
+}

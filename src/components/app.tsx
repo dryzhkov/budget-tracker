@@ -7,7 +7,6 @@ import { FullPageSpinner } from "./lib";
 import { StatementDto, StatementPicker } from "./statementPicker";
 import { StatementEditor } from "./statementEditor";
 import { css } from "@emotion/react";
-import * as colors from "styles/colors";
 
 const container = css`
   padding: 10px;
@@ -18,12 +17,10 @@ const container = css`
 const left = css`
   flex: 0 0 350px;
   padding: 20px;
-  border: 1px solid ${colors.green};
 `;
 const right = css`
   flex: 1;
   padding: 20px;
-  border: 1px dashed ${colors.green};
 `;
 
 function App() {
