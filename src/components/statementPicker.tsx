@@ -105,12 +105,13 @@ export function StatementPicker({
             return (
               <ListGroup.Item
                 action
-                onClick={() =>
+                onClick={() => {
                   setSelectedStatement({
                     id: item.key,
                     date: stringToDate(item.date),
-                  })
-                }
+                  });
+                  setPickerDate(null);
+                }}
                 key={item.key}
               >
                 {formatDate(item.date)}

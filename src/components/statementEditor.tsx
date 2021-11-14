@@ -4,6 +4,7 @@ import {
   Transaction,
   useAllCategoriesQuery,
   useGetStatementByIdQuery,
+  useUpdateTransactionMutation,
 } from "generated/graphql";
 import { dateToString } from "utils/dates";
 import { Spinner } from "./lib";
@@ -15,7 +16,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import ListGroup from "react-bootstrap/ListGroup";
 import Overlay from "react-bootstrap/Overlay";
 import Popover from "react-bootstrap/Popover";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 interface StatementEditorProps {
   statement: StatementDto | null;
 }
@@ -36,14 +37,26 @@ export function StatementEditor({ statement }: StatementEditorProps) {
   });
 
   const { data: results, loading: loadingCategories } = useAllCategoriesQuery();
-  const [show, setShow] = useState(false);
+  const [showPopover, setShowPopover] = useState(false);
   const [target, setTarget] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
+
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
-  const ref = useRef(null);
+
+  const [updateTransactionMutation, { error: updateErr }] =
+    useUpdateTransactionMutation({
+      variables: {
+        id: "",
+        data: { amount: 0 },
+      },
+      refetchQueries: ["GetStatementById"],
+    });
+
+  const [amount, setAmount] = useState<number>(0);
+
   const prevTargetRef = useRef(null);
 
   const handleClick = (
@@ -52,15 +65,38 @@ export function StatementEditor({ statement }: StatementEditorProps) {
     transaction: Transaction | null
   ) => {
     if (prevTargetRef.current !== event.target) {
-      setShow(true);
+      setShowPopover(true);
     } else {
-      setShow(!show);
+      setShowPopover(!showPopover);
     }
     prevTargetRef.current = event.target;
     setSelectedCategory(category);
     setSelectedTransaction(transaction);
+    setAmount(transaction?.amount ?? 0);
     setTarget(event.target);
   };
+
+  const handleSubmit = () => {
+    updateTransactionMutation({
+      variables: {
+        id: selectedTransaction?._id ?? "",
+        data: {
+          amount: amount,
+        },
+      },
+    });
+    if (!updateErr) {
+      setShowPopover(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setShowPopover(false);
+  };
+
+  useEffect(() => {
+    setShowPopover(false);
+  }, [statement]);
 
   if (loadingStatement || loadingCategories) {
     return <Spinner />;
@@ -106,7 +142,7 @@ export function StatementEditor({ statement }: StatementEditorProps) {
   const total = totalIncome - totalExpense - totalSaving;
 
   return (
-    <div ref={ref}>
+    <>
       <div>Statement Date: {statement && dateToString(statement.date)}</div>
       <ListGroup>
         <ListGroup.Item
@@ -218,10 +254,9 @@ export function StatementEditor({ statement }: StatementEditorProps) {
           );
         })}
         <Overlay
-          show={show && !!ref.current}
+          show={showPopover}
           target={target}
           placement="bottom"
-          container={ref}
           containerPadding={20}
         >
           <Popover id="popover-contained">
@@ -232,20 +267,21 @@ export function StatementEditor({ statement }: StatementEditorProps) {
                 <FormControl
                   aria-label="Amount"
                   placeholder="0"
-                  defaultValue={selectedTransaction?.amount}
+                  onChange={(e) => setAmount(Number(e.target.value))}
+                  value={amount}
                   type="number"
                 />
               </InputGroup>
-              <Button variant="success" type="submit">
+              <Button variant="success" type="submit" onClick={handleSubmit}>
                 Save
               </Button>
-              <Button variant="danger" type="reset">
+              <Button variant="danger" type="reset" onClick={handleCancel}>
                 Cancel
               </Button>
             </Popover.Body>
           </Popover>
         </Overlay>
       </div>
-    </div>
+    </>
   );
 }
