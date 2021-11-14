@@ -35,10 +35,18 @@ function App() {
         <ApolloProvider>
           <div css={container}>
             <section css={left}>
-              <StatementPicker setSelectedStatement={setSelectedStatement} />
+              <StatementPicker
+                statement={selectedStatement}
+                setSelectedStatement={setSelectedStatement}
+              />
             </section>
             <section css={right}>
-              <StatementEditor statement={selectedStatement} />
+              {selectedStatement && (
+                <StatementEditor
+                  statement={selectedStatement}
+                  setSelectedStatement={setSelectedStatement}
+                />
+              )}
             </section>
           </div>
         </ApolloProvider>

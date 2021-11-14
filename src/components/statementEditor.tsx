@@ -3,6 +3,10 @@ import {
   CategoryType,
   Transaction,
   useAllCategoriesQuery,
+  useCreateStatementMutation,
+  useCreateTransactionMutation,
+  useDeleteStatementMutation,
+  useDeleteTransactionMutation,
   useGetStatementByIdQuery,
   useUpdateTransactionMutation,
 } from "generated/graphql";
@@ -18,7 +22,8 @@ import Overlay from "react-bootstrap/Overlay";
 import Popover from "react-bootstrap/Popover";
 import { useEffect, useRef, useState } from "react";
 interface StatementEditorProps {
-  statement: StatementDto | null;
+  statement: StatementDto;
+  setSelectedStatement: (value: StatementDto | null) => void;
 }
 
 const formatter = new Intl.NumberFormat("en-US", {
@@ -26,14 +31,17 @@ const formatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-export function StatementEditor({ statement }: StatementEditorProps) {
+export function StatementEditor({
+  statement,
+  setSelectedStatement,
+}: StatementEditorProps) {
   const {
     data,
     loading: loadingStatement,
     error,
   } = useGetStatementByIdQuery({
     variables: { id: statement?.id ?? "" },
-    skip: !statement?.id,
+    skip: !statement.id,
   });
 
   const { data: results, loading: loadingCategories } = useAllCategoriesQuery();
@@ -46,12 +54,28 @@ export function StatementEditor({ statement }: StatementEditorProps) {
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
 
-  const [updateTransactionMutation, { error: updateErr }] =
+  const [createStatementMutation, { error: createStatementErr }] =
+    useCreateStatementMutation({
+      refetchQueries: ["GetStatementsByYear"],
+    });
+
+  const [deleteStatementMutation, { error: deleteStatementErr }] =
+    useDeleteStatementMutation({
+      refetchQueries: ["GetStatementsByYear"],
+    });
+
+  const [createTransactionMutation, { error: createTransactionErr }] =
+    useCreateTransactionMutation({
+      refetchQueries: ["GetStatementById"],
+    });
+
+  const [updateTransactionMutation, { error: updateTransactionErr }] =
     useUpdateTransactionMutation({
-      variables: {
-        id: "",
-        data: { amount: 0 },
-      },
+      refetchQueries: ["GetStatementById"],
+    });
+
+  const [deleteTransactionMutation, { error: deleteTransactionErr }] =
+    useDeleteTransactionMutation({
       refetchQueries: ["GetStatementById"],
     });
 
@@ -77,25 +101,107 @@ export function StatementEditor({ statement }: StatementEditorProps) {
   };
 
   const handleSubmit = () => {
-    updateTransactionMutation({
-      variables: {
-        id: selectedTransaction?._id ?? "",
-        data: {
-          amount: amount,
+    // case 1: new statement + new transaction
+    if (!statement.id && statement.date && selectedCategory) {
+      createStatementMutation({
+        variables: {
+          data: {
+            date: dateToString(statement.date),
+            year: String(statement.date.getFullYear()),
+            transactions: {
+              create: [
+                { amount: amount, category: { connect: selectedCategory._id } },
+              ],
+            },
+          },
         },
-      },
-    });
-    if (!updateErr) {
-      setShowPopover(false);
+      });
+
+      if (!createStatementErr) {
+        setShowPopover(false);
+      }
+    }
+
+    // case 2: existing statement + new stransaction
+    if (statement.id && !selectedTransaction?._id && selectedCategory) {
+      createTransactionMutation({
+        variables: {
+          data: {
+            amount: amount,
+            statement: { connect: statement.id },
+            category: { connect: selectedCategory._id },
+          },
+        },
+      });
+
+      if (!createTransactionErr) {
+        setShowPopover(false);
+      }
+    }
+
+    // case 3: existing statement + existing transaction
+    if (statement.id && selectedTransaction?._id) {
+      updateTransactionMutation({
+        variables: {
+          id: selectedTransaction._id,
+          data: {
+            amount: amount,
+          },
+        },
+      });
+
+      if (!updateTransactionErr) {
+        setShowPopover(false);
+      }
     }
   };
 
-  const handleCancel = () => {
+  const handleDelete = () => {
+    if (selectedTransaction?._id) {
+      deleteTransactionMutation({
+        variables: {
+          id: selectedTransaction._id,
+        },
+      });
+
+      if (!deleteTransactionErr) {
+        setShowPopover(false);
+      }
+    }
+  };
+
+  const handleDeleteStatement = () => {
+    if (statement.id) {
+      deleteStatementMutation({
+        variables: {
+          id: statement.id,
+        },
+      });
+
+      if (!deleteStatementErr) {
+        // delete any transactions associated with this statement
+        data?.findStatementByID?.transactions.data.forEach((t) => {
+          if (t?._id) {
+            deleteTransactionMutation({
+              variables: {
+                id: t._id,
+              },
+            });
+          }
+        });
+        setShowPopover(false);
+        setSelectedStatement(null);
+      }
+    }
+  };
+
+  const handleClosePopover = () => {
     setShowPopover(false);
   };
 
   useEffect(() => {
     setShowPopover(false);
+    setSelectedCategory(null);
   }, [statement]);
 
   if (loadingStatement || loadingCategories) {
@@ -143,7 +249,14 @@ export function StatementEditor({ statement }: StatementEditorProps) {
 
   return (
     <>
-      <div>Statement Date: {statement && dateToString(statement.date)}</div>
+      <div>
+        Statement Date: {statement && dateToString(statement.date)}
+        {statement.id && (
+          <Button variant="danger" type="reset" onClick={handleDeleteStatement}>
+            Delete
+          </Button>
+        )}
+      </div>
       <ListGroup>
         <ListGroup.Item
           as="li"
@@ -275,8 +388,11 @@ export function StatementEditor({ statement }: StatementEditorProps) {
               <Button variant="success" type="submit" onClick={handleSubmit}>
                 Save
               </Button>
-              <Button variant="danger" type="reset" onClick={handleCancel}>
-                Cancel
+              <Button variant="danger" type="reset" onClick={handleDelete}>
+                Delete
+              </Button>
+              <Button type="reset" onClick={handleClosePopover}>
+                Close
               </Button>
             </Popover.Body>
           </Popover>

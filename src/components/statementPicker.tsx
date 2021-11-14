@@ -2,7 +2,7 @@ import { Spinner } from "./lib";
 
 import Dropdown from "react-bootstrap/Dropdown";
 import ListGroup from "react-bootstrap/ListGroup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import DatePicker from "react-datepicker";
 
@@ -11,6 +11,7 @@ import { dateToString, formatDate, getYear, stringToDate } from "utils/dates";
 import { useGetStatementsByYearQuery, Statement } from "generated/graphql";
 
 interface StatementPickerProps {
+  statement: StatementDto | null;
   setSelectedStatement: (value: StatementDto | null) => void;
 }
 
@@ -28,6 +29,7 @@ function isStatement(
 }
 
 export function StatementPicker({
+  statement,
   setSelectedStatement,
 }: StatementPickerProps) {
   const [year, setYear] = useState<string>(getYear());
@@ -38,6 +40,10 @@ export function StatementPicker({
     loading,
     error,
   } = useGetStatementsByYearQuery({ variables: { year } });
+
+  useEffect(() => {
+    setPickerDate(null);
+  }, [results]);
 
   if (loading) {
     return <Spinner />;
@@ -54,6 +60,8 @@ export function StatementPicker({
     setSelectedStatement(null);
     setPickerDate(null);
   };
+
+  console.log(statement?.date);
 
   return (
     <>
@@ -88,7 +96,7 @@ export function StatementPicker({
 
       <ListGroup>
         {pickerDate && (
-          <ListGroup.Item action disabled key={"new-paydate"}>
+          <ListGroup.Item action active key={"new-paydate"}>
             {dateToString(pickerDate)}
           </ListGroup.Item>
         )}
@@ -105,6 +113,10 @@ export function StatementPicker({
             return (
               <ListGroup.Item
                 action
+                active={
+                  formatDate(dateToString(statement?.date ?? new Date())) ===
+                  formatDate(item.date)
+                }
                 onClick={() => {
                   setSelectedStatement({
                     id: item.key,
