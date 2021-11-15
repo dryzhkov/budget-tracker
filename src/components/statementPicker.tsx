@@ -2,7 +2,7 @@ import { Spinner } from "./lib";
 
 import Dropdown from "react-bootstrap/Dropdown";
 import ListGroup from "react-bootstrap/ListGroup";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import DatePicker from "react-datepicker";
 
@@ -41,10 +41,6 @@ export function StatementPicker({
     error,
   } = useGetStatementsByYearQuery({ variables: { year } });
 
-  useEffect(() => {
-    setPickerDate(null);
-  }, [results]);
-
   if (loading) {
     return <Spinner />;
   }
@@ -61,15 +57,12 @@ export function StatementPicker({
     setPickerDate(null);
   };
 
-  console.log(statement?.date);
-
   return (
     <>
       <Dropdown
         className="d-inline mx-2"
         as="select"
         onChange={handleYearChanged}
-        onSelect={(event) => console.log(event)}
         value={year}
       >
         <Dropdown.Item as="option" eventKey="2021">
@@ -114,8 +107,9 @@ export function StatementPicker({
               <ListGroup.Item
                 action
                 active={
-                  formatDate(dateToString(statement?.date ?? new Date())) ===
-                  formatDate(item.date)
+                  !!statement &&
+                  formatDate(dateToString(statement.date)) ===
+                    formatDate(item.date)
                 }
                 onClick={() => {
                   setSelectedStatement({
