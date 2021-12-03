@@ -7,6 +7,9 @@ import { GraphQlError, Spinner } from "./lib";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 
+let mutationTimeout: ReturnType<typeof setTimeout>;
+const MUTATION_TIMOUT_DELAY = 1000;
+
 export function Category() {
   const { categoryId } = useParams();
 
@@ -39,7 +42,6 @@ export function Category() {
   }
 
   const handleArchivedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.checked);
     updateCategoryMutation({
       variables: {
         id: category._id,
@@ -54,13 +56,42 @@ export function Category() {
   };
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.value);
+    if (mutationTimeout) {
+      clearTimeout(mutationTimeout);
+    }
+    mutationTimeout = setTimeout(() => {
+      updateCategoryMutation({
+        variables: {
+          id: category._id,
+          data: {
+            title: event.target.value,
+            type: category.type,
+            archived: category.archived,
+          },
+        },
+      });
+    }, MUTATION_TIMOUT_DELAY);
   };
 
   const handleExternalUrlChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    console.log(event.target.value);
+    if (mutationTimeout) {
+      clearTimeout(mutationTimeout);
+    }
+    mutationTimeout = setTimeout(() => {
+      updateCategoryMutation({
+        variables: {
+          id: category._id,
+          data: {
+            title: category.title,
+            type: category.type,
+            archived: category.archived,
+            externalUrl: event.target.value,
+          },
+        },
+      });
+    }, MUTATION_TIMOUT_DELAY);
   };
 
   return (
@@ -68,14 +99,14 @@ export function Category() {
       <FloatingLabel controlId="floatingTitle" label="Title" className="mb-3">
         <Form.Control
           type="text"
-          value={category.title}
+          defaultValue={category.title}
           onChange={handleTitleChange}
         />
       </FloatingLabel>
       <FloatingLabel controlId="floatingUrl" label="External URL">
         <Form.Control
           type="text"
-          value={category.externalUrl ?? ""}
+          defaultValue={category.externalUrl ?? ""}
           onChange={handleExternalUrlChange}
         />
       </FloatingLabel>
