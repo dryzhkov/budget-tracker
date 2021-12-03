@@ -12,7 +12,7 @@ import {
   useUpdateTransactionMutation,
 } from "generated/graphql";
 import { dateToString } from "utils/dates";
-import { Spinner } from "./lib";
+import { GraphQlError, Spinner } from "./lib";
 import { StatementDto } from "./statementPicker";
 
 import Button from "react-bootstrap/Button";
@@ -246,7 +246,7 @@ export function StatementEditor({
   }
 
   if (error) {
-    return <div>Oops, error happened. {JSON.stringify(error)}</div>;
+    return <GraphQlError error={error} />;
   }
 
   const income = data?.findStatementByID?.transactions.data.filter(

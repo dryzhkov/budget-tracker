@@ -10,7 +10,7 @@ const container = css`
   height: calc(100vh - 50px);
 `;
 const left = css`
-  flex: 0 0 350px;
+  flex: 0 0 225px;
   padding: 20px;
 `;
 const right = css`

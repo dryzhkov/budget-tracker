@@ -3,6 +3,7 @@ import { css, keyframes } from "@emotion/react";
 import { FaSpinner } from "react-icons/fa";
 import styled from "@emotion/styled/macro";
 import * as colors from "styles/colors";
+import type { ApolloError } from "@apollo/client";
 
 const spin = keyframes({
   "0%": { transform: "rotate(0deg)" },
@@ -12,6 +13,10 @@ const spin = keyframes({
 const Spinner = styled(FaSpinner)({
   animation: `${spin} 1s linear infinite`,
 });
+
+const GraphQlError = ({ error }: { error: ApolloError }) => {
+  return <div>Oops, error happened. {JSON.stringify(error)}</div>;
+};
 
 const fullPageSpinnerStyles = css({
   fontSize: "4em",
@@ -45,4 +50,4 @@ const CircleButton = styled.button({
   cursor: "pointer",
 });
 
-export { Spinner, FullPageSpinner, CircleButton };
+export { GraphQlError, Spinner, FullPageSpinner, CircleButton };

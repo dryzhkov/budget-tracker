@@ -1,9 +1,10 @@
-import { Spinner } from "./lib";
+import { GraphQlError, Spinner } from "./lib";
 
 import Dropdown from "react-bootstrap/Dropdown";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useState } from "react";
 
+import Card from "react-bootstrap/Card";
 import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
@@ -46,7 +47,7 @@ export function StatementPicker({
   }
 
   if (error) {
-    return <div>Oops, error happened. {JSON.stringify(error)}</div>;
+    return <GraphQlError error={error} />;
   }
 
   const handleYearChanged = (event: any) => {
@@ -87,44 +88,61 @@ export function StatementPicker({
         }}
       />
 
-      <ListGroup>
-        {pickerDate && (
-          <ListGroup.Item action active key={"new-paydate"}>
-            {dateToString(pickerDate)}
-          </ListGroup.Item>
-        )}
-        {results?.statementsByYear.data
-          .filter(isStatement)
-          .map((item) => {
-            return { key: item._id, date: item.date };
-          })
-          .sort(
-            (first, second) =>
-              new Date(second.date).getTime() - new Date(first.date).getTime()
-          )
-          .map((item) => {
-            return (
-              <ListGroup.Item
-                action
-                active={
-                  !!statement &&
-                  formatDate(dateToString(statement.date)) ===
-                    formatDate(item.date)
-                }
-                onClick={() => {
-                  setSelectedStatement({
-                    id: item.key,
-                    date: stringToDate(item.date),
-                  });
-                  setPickerDate(null);
-                }}
-                key={item.key}
-              >
-                {formatDate(item.date)}
-              </ListGroup.Item>
-            );
-          })}
-      </ListGroup>
+      <input
+        type="date"
+        value={pickerDate ? dateToString(pickerDate) : undefined}
+        // min="2018-01-01"
+        // max="2018-12-31"
+        onChange={(e) => {
+          console.log(e.target.value);
+          const date = stringToDate(e.target.value);
+          setPickerDate(date);
+          setSelectedStatement(date ? { date } : null);
+        }}
+      />
+
+      <Card>
+        <Card.Header>Statements</Card.Header>
+
+        <ListGroup>
+          {pickerDate && (
+            <ListGroup.Item action active key={"new-paydate"}>
+              {dateToString(pickerDate)}
+            </ListGroup.Item>
+          )}
+          {results?.statementsByYear.data
+            .filter(isStatement)
+            .map((item) => {
+              return { key: item._id, date: item.date };
+            })
+            .sort(
+              (first, second) =>
+                new Date(second.date).getTime() - new Date(first.date).getTime()
+            )
+            .map((item) => {
+              return (
+                <ListGroup.Item
+                  action
+                  active={
+                    !!statement &&
+                    formatDate(dateToString(statement.date)) ===
+                      formatDate(item.date)
+                  }
+                  onClick={() => {
+                    setSelectedStatement({
+                      id: item.key,
+                      date: stringToDate(item.date),
+                    });
+                    setPickerDate(null);
+                  }}
+                  key={item.key}
+                >
+                  {formatDate(item.date)}
+                </ListGroup.Item>
+              );
+            })}
+        </ListGroup>
+      </Card>
     </>
   );
 }

@@ -6,6 +6,7 @@ import { FullPageSpinner } from "./lib";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Categories } from "./categories";
 import { Budget } from "./budget";
+import { Category } from "./category";
 
 function App() {
   const { isAuthenticated, token } = useAuth();
@@ -19,6 +20,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Budget />} />
               <Route path="categories" element={<Categories />} />
+              <Route path="categories/:categoryId" element={<Category />} />
             </Routes>
           </ApolloProvider>
         ) : null}
