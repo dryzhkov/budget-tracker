@@ -24,7 +24,7 @@ export function Category() {
 
   const { findCategoryByID: category } = result ?? {};
 
-  const [updateCategoryMutation, { error: updateCategoryErr }] =
+  const [updateCategoryMutation /* { error: updateCategoryErr } */] =
     useUpdateCategoryMutation({
       refetchQueries: ["GetCategoryById"],
     });
