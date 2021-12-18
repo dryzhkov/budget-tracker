@@ -21,6 +21,7 @@ const right = css`
 export function Budget() {
   const [selectedStatement, setSelectedStatement] =
     useState<StatementDto | null>(null);
+
   return (
     <div css={container}>
       <section css={left}>

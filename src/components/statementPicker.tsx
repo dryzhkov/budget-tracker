@@ -2,7 +2,7 @@ import { GraphQlError, Spinner } from "./lib";
 
 import Dropdown from "react-bootstrap/Dropdown";
 import ListGroup from "react-bootstrap/ListGroup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Card from "react-bootstrap/Card";
 import DatePicker from "react-datepicker";
@@ -41,6 +41,10 @@ export function StatementPicker({
     loading,
     error,
   } = useGetStatementsByYearQuery({ variables: { year } });
+
+  useEffect(() => {
+    setPickerDate(null);
+  }, [results?.statementsByYear.data]);
 
   if (loading) {
     return <Spinner />;
@@ -94,7 +98,6 @@ export function StatementPicker({
         // min="2018-01-01"
         // max="2018-12-31"
         onChange={(e) => {
-          console.log(e.target.value);
           const date = stringToDate(e.target.value);
           setPickerDate(date);
           setSelectedStatement(date ? { date } : null);

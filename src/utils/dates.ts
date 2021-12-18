@@ -1,5 +1,14 @@
-export function dateToString(date: Date) {
-  return date.toLocaleDateString("en-US", { timeZone: "UTC" });
+export function dateToString(
+  date: Date,
+  options: Intl.DateTimeFormatOptions = {}
+) {
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    ...options,
+    timeZone: "UTC",
+  });
 }
 
 export function stringToDate(date: string) {
@@ -10,6 +19,9 @@ export function getYear(date?: Date) {
   return (date ?? new Date()).getFullYear().toString();
 }
 
-export function formatDate(backendDate: string) {
-  return dateToString(stringToDate(backendDate));
+export function formatDate(
+  backendDate: string,
+  options: Intl.DateTimeFormatOptions = {}
+) {
+  return dateToString(stringToDate(backendDate), options);
 }

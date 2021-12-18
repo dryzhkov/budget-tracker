@@ -1,0 +1,19 @@
+query AllStatements {
+  allStatements {
+    data {
+      _id
+      date
+      year
+      transactions {
+        data {
+          _id
+          amount
+          category {
+            _id
+            title
+          }
+        }
+      }
+    }
+  }
+}

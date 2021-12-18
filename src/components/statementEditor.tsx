@@ -4,6 +4,7 @@ import {
   CategoryType,
   Transaction,
   useAllCategoriesQuery,
+  useAllStatementsQuery,
   useCreateStatementMutation,
   useCreateTransactionMutation,
   useDeleteStatementMutation,
@@ -11,7 +12,7 @@ import {
   useGetStatementByIdQuery,
   useUpdateTransactionMutation,
 } from "generated/graphql";
-import { dateToString } from "utils/dates";
+import { dateToString, formatDate, stringToDate } from "utils/dates";
 import { GraphQlError, Spinner } from "./lib";
 import { StatementDto } from "./statementPicker";
 
@@ -21,7 +22,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import ListGroup from "react-bootstrap/ListGroup";
 import Overlay from "react-bootstrap/Overlay";
 import Popover from "react-bootstrap/Popover";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { css } from "@emotion/react";
 interface StatementEditorProps {
   statement: StatementDto;
@@ -63,6 +64,11 @@ const floatRight = css`
   float: right;
 `;
 
+const mruText = css`
+  font-size: 10px;
+  font-style: italic;
+`;
+
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -82,8 +88,9 @@ export function StatementEditor({
   });
 
   const { data: results, loading: loadingCategories } = useAllCategoriesQuery();
+  const { data: statementResults } = useAllStatementsQuery();
   const [showPopover, setShowPopover] = useState(false);
-  const [target, setTarget] = useState(null);
+  const [target, setTarget] = useState<HTMLElement | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
@@ -118,10 +125,10 @@ export function StatementEditor({
 
   const [amount, setAmount] = useState<number>(0);
 
-  const prevTargetRef = useRef(null);
+  const prevTargetRef = useRef<EventTarget | null>(null);
 
   const handleClick = (
-    event: any,
+    event: React.MouseEvent<Element>,
     category: Category | null,
     transaction: Transaction | null
   ) => {
@@ -134,13 +141,84 @@ export function StatementEditor({
     setSelectedCategory(category);
     setSelectedTransaction(transaction);
     setAmount(transaction?.amount ?? 0);
-    setTarget(event.target);
+    setTarget(event.target as HTMLElement);
   };
 
-  const handleSubmit = () => {
+  const filteredCategories = useMemo(() => {
+    return (
+      results?.allCategories.data.filter((c) => {
+        return (
+          !c?.archived &&
+          !data?.findStatementByID?.transactions.data.find(
+            (s) => s?.category._id === c?._id
+          )
+        );
+      }) ?? []
+    );
+  }, [data?.findStatementByID?.transactions.data, results?.allCategories.data]);
+
+  const getMostRecentlyUsed = useCallback(
+    (title: string | undefined) => {
+      const mostRecent: {
+        amount: number;
+        title: string;
+        date: string;
+      }[] = [];
+      filteredCategories.forEach((target) => {
+        const sortedStatements = statementResults?.allStatements.data.length
+          ? statementResults.allStatements.data
+              .slice()
+              .sort((first, second) => {
+                if (first && second) {
+                  return (
+                    stringToDate(second.date).getTime() -
+                    stringToDate(first.date).getTime()
+                  );
+                }
+
+                return 0;
+              })
+          : [];
+
+        sortedStatements.some((statement) => {
+          const transaction = statement?.transactions.data.find(
+            (transaction) => {
+              return transaction?.category._id === target?._id;
+            }
+          );
+
+          if (transaction) {
+            mostRecent.push({
+              amount: transaction?.amount,
+              title: transaction?.category.title,
+              date: statement?.date ?? "",
+            });
+            return true;
+          }
+
+          return false;
+        });
+      });
+
+      const match = mostRecent.find((t) => t.title === title);
+      if (match) {
+        return (
+          <div css={mruText}>
+            Last: {formatter.format(match.amount)} on{" "}
+            {formatDate(match.date, { year: undefined })}
+          </div>
+        );
+      }
+
+      return null;
+    },
+    [filteredCategories, statementResults?.allStatements.data]
+  );
+
+  const handleSubmit = async () => {
     // case 1: new statement + new transaction
     if (!statement.id && statement.date && selectedCategory) {
-      createStatementMutation({
+      const result = await createStatementMutation({
         variables: {
           data: {
             date: dateToString(statement.date),
@@ -157,6 +235,11 @@ export function StatementEditor({
       if (!createStatementErr) {
         setShowPopover(false);
       }
+
+      setSelectedStatement({
+        id: result.data?.createStatement._id,
+        date: statement.date,
+      });
     }
 
     // case 2: existing statement + new stransaction
@@ -258,16 +341,6 @@ export function StatementEditor({
   const savings = data?.findStatementByID?.transactions.data.filter(
     (t) => t?.category.type === CategoryType.Saving
   );
-
-  const filteredCategories =
-    results?.allCategories.data.filter((c) => {
-      return (
-        !c?.archived &&
-        !data?.findStatementByID?.transactions.data.find(
-          (s) => s?.category._id === c?._id
-        )
-      );
-    }) ?? [];
 
   const totalIncome =
     income?.reduce((prev, cur) => {
@@ -382,6 +455,7 @@ export function StatementEditor({
                 }
               >
                 {c?.title}
+                {getMostRecentlyUsed(c?.title)}
               </Button>
             );
           })}
