@@ -1,0 +1,9 @@
+query GetStatementsByYear($year: String!) {
+  statementsByYear(year: $year) {
+    data {
+      _id
+      date
+      year
+    }
+  }
+}

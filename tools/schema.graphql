@@ -1,0 +1,31 @@
+type Category {
+  archived: Boolean!
+  title: String!
+  type: CategoryType!
+  externalUrl: String
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+  SAVING
+}
+
+type Statement {
+  date: String!
+  year: String!
+  transactions: [Transaction!] @relation
+}
+
+type Transaction {
+  statement: Statement
+  amount: Float!
+  category: Category!
+}
+
+type Query {
+  allCategories: [Category!]
+  allStatements: [Statement!]
+  statementsByYear(year: String!): [Statement!]
+  statementByDate(date: String!): Statement
+}

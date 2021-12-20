@@ -1,0 +1,5 @@
+mutation CreateStatement($data: StatementInput!) {
+  createStatement(data: $data) {
+    _id
+  }
+}

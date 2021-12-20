@@ -1,0 +1,10 @@
+query GetCategoryById($id: ID!) {
+  findCategoryByID(id: $id) {
+    _id
+    _ts
+    title
+    type
+    externalUrl
+    archived
+  }
+}

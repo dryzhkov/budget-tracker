@@ -1,0 +1,5 @@
+mutation DeleteStatement($id: ID!) {
+  deleteStatement(id: $id) {
+    _id
+  }
+}
