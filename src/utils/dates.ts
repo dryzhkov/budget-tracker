@@ -6,8 +6,8 @@ export function dateToString(
     year: "numeric",
     month: "short",
     day: "2-digit",
-    ...options,
     timeZone: "UTC",
+    ...options,
   });
 }
 

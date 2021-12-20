@@ -5,17 +5,16 @@ import { StatementEditor } from "./statementEditor";
 import { css } from "@emotion/react";
 
 const container = css`
-  padding: 10px;
   display: flex;
   height: calc(100vh - 50px);
 `;
 const left = css`
   flex: 0 0 225px;
-  padding: 20px;
+  padding: 10px;
 `;
 const right = css`
   flex: 1;
-  padding: 20px;
+  padding: 10px;
 `;
 
 export function Budget() {
