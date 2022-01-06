@@ -60,13 +60,12 @@ async function getTransactionsFromMongo(targetYear) {
 }
 
 async function migrateData() {
-  const years = [2021];
+  const years = [2020, 2019, 2018];
   for (const year of years) {
     const mongoData = await getTransactionsFromMongo(year);
 
-    // TODO: filter existing categories before migrating the ones from previous years!!!
     // await saveCategories(mongoData);
-    // await saveStatements(mongoData.paychecks);
+    await saveStatements(mongoData.paychecks);
   }
 }
 
@@ -178,18 +177,38 @@ async function saveCategories(data) {
     };
   });
 
+  const existingCategories = await execQuery(`query {
+    allCategories {
+      data {
+        _id     
+        type
+        title
+      }
+    }
+  }`);
+
   for (const category of categories) {
     console.log(category);
-    await execQuery(`mutation {
-            createCategory(
-              data: {
-                title: "${category.title}"
-                archived: false
-                type: ${category.type}
-              }  
-            ) { _id }
-          }
-      `);
+
+    const match = existingCategories.allCategories.data.find((cat) => {
+      return cat.type === category.type && category.title === cat.title;
+    });
+
+    if (!match) {
+      console.log("Saving new category");
+      await execQuery(`mutation {
+              createCategory(
+                data: {
+                  title: "${category.title}"
+                  archived: false
+                  type: ${category.type}
+                }
+              ) { _id }
+            }
+        `);
+    } else {
+      console.log("Already exists, skipping");
+    }
   }
 }
 

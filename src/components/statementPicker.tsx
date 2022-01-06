@@ -15,6 +15,15 @@ import type { ButtonProps } from "react-bootstrap/Button";
 import Button from "react-bootstrap/Button";
 import { css } from "@emotion/react";
 
+const getYears = () => {
+  const startingYear = 2018;
+  const years = [startingYear];
+  for (let i = startingYear + 1; i <= getYear(); i++) {
+    years.unshift(i);
+  }
+  return years;
+};
+
 interface StatementPickerProps {
   statement: StatementDto | null;
   setSelectedStatement: (value: StatementDto | null) => void;
@@ -69,14 +78,14 @@ export function StatementPicker({
   statement,
   setSelectedStatement,
 }: StatementPickerProps) {
-  const [year, setYear] = useState<string>(getYear());
+  const [year, setYear] = useState<number>(getYear());
   const [pickerDate, setPickerDate] = useState<Date | null>(null);
 
   const {
     data: results,
     loading,
     error,
-  } = useGetStatementsByYearQuery({ variables: { year } });
+  } = useGetStatementsByYearQuery({ variables: { year: year.toString() } });
 
   useEffect(() => {
     setPickerDate(null);
@@ -124,18 +133,11 @@ export function StatementPicker({
             value={year}
             css={yearPicker}
           >
-            <Dropdown.Item as="option" eventKey="2021">
-              2021
-            </Dropdown.Item>
-            <Dropdown.Item as="option" eventKey="2020">
-              2020
-            </Dropdown.Item>
-            <Dropdown.Item as="option" eventKey="2019">
-              2019
-            </Dropdown.Item>
-            <Dropdown.Item as="option" eventKey="2018">
-              2018
-            </Dropdown.Item>
+            {getYears().map((year) => (
+              <Dropdown.Item as="option" eventKey={year} key={year}>
+                {year}
+              </Dropdown.Item>
+            ))}
           </Dropdown>
         </Card.Header>
 

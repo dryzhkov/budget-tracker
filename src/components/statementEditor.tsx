@@ -221,7 +221,11 @@ export function StatementEditor({
       const result = await createStatementMutation({
         variables: {
           data: {
-            date: dateToString(statement.date),
+            date: dateToString(statement.date, {
+              year: undefined,
+              month: undefined,
+              day: undefined,
+            }),
             year: String(statement.date.getFullYear()),
             transactions: {
               create: [

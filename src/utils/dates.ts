@@ -16,7 +16,7 @@ export function stringToDate(date: string) {
 }
 
 export function getYear(date?: Date) {
-  return (date ?? new Date()).getFullYear().toString();
+  return (date ?? new Date()).getFullYear();
 }
 
 export function formatDate(
