@@ -89,7 +89,7 @@ export function StatementPicker({
 
   useEffect(() => {
     setPickerDate(null);
-  }, [results?.statementsByYear.data]);
+  }, [results?.statementsByYearSortedDesc.data]);
 
   if (loading) {
     return <Spinner />;
@@ -147,7 +147,7 @@ export function StatementPicker({
               {dateToString(pickerDate)}
             </ListGroup.Item>
           )}
-          {results?.statementsByYear.data
+          {results?.statementsByYearSortedDesc.data
             .filter(isStatement)
             .map((item) => {
               return { key: item._id, date: item.date };

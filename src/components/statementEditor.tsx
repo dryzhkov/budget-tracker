@@ -165,8 +165,9 @@ export function StatementEditor({
         date: string;
       }[] = [];
       filteredCategories.forEach((target) => {
-        const sortedStatements = statementResults?.allStatements.data.length
-          ? statementResults.allStatements.data
+        const sortedStatements = statementResults?.allStatementsSortedByYearDesc
+          .data.length
+          ? statementResults.allStatementsSortedByYearDesc.data
               .slice()
               .sort((first, second) => {
                 if (first && second) {
@@ -212,7 +213,7 @@ export function StatementEditor({
 
       return null;
     },
-    [filteredCategories, statementResults?.allStatements.data]
+    [filteredCategories, statementResults?.allStatementsSortedByYearDesc.data]
   );
 
   const handleSubmit = async () => {

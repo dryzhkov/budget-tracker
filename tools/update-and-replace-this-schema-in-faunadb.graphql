@@ -26,6 +26,10 @@ type Transaction {
 type Query {
   allCategories: [Category!]
   allStatements: [Statement!]
+  allStatementsSortedByYearDesc: [Statement!]
+    @resolver(name: "all_statements_sorted_by_year_desc", paginated: true)
   statementsByYear(year: String!): [Statement!]
+  statementsByYearSortedDesc(year: String!): [Statement!]
+    @resolver(name: "statements_for_year_desc", paginated: true)
   statementByDate(date: String!): Statement
 }

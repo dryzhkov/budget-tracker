@@ -1,22 +1,17 @@
 directive @embedded on OBJECT
+
 directive @collection(name: String!) on OBJECT
+
 directive @index(name: String!) on FIELD_DEFINITION
+
 directive @resolver(
   name: String
   paginated: Boolean! = false
 ) on FIELD_DEFINITION
+
 directive @relation(name: String) on FIELD_DEFINITION
+
 directive @unique(index: String) on FIELD_DEFINITION
-type Category {
-  externalUrl: String
-  # The document's ID.
-  _id: ID!
-  archived: Boolean!
-  title: String!
-  type: CategoryType!
-  # The document's timestamp.
-  _ts: Long!
-}
 
 # 'Category' input values
 input CategoryInput {
@@ -26,28 +21,7 @@ input CategoryInput {
   externalUrl: String
 }
 
-# The pagination object for elements of type 'Category'.
-type CategoryPage {
-  # The elements of type 'Category' in this page.
-  data: [Category]!
-  # A cursor for elements coming after the current page.
-  after: String
-  # A cursor for elements coming before the current page.
-  before: String
-}
-
-enum CategoryType {
-  INCOME
-  EXPENSE
-  SAVING
-}
-
 scalar Date
-
-# The `Long` scalar type
-# represents non-fractional signed whole numeric values.
-# Long can represent values between -(2^63) and 2^63 - 1.
-scalar Long
 
 type Mutation {
   # Create a new document in the collection of 'Statement'
@@ -55,105 +29,63 @@ type Mutation {
     # 'Statement' input values
     data: StatementInput!
   ): Statement!
+
   # Delete an existing document in the collection of 'Statement'
   deleteStatement(
     # The 'Statement' document's ID
     id: ID!
   ): Statement
+
   # Update an existing document in the collection of 'Statement'
   updateStatement(
     # The 'Statement' document's ID
     id: ID!
+
     # 'Statement' input values
     data: StatementInput!
   ): Statement
+
   # Update an existing document in the collection of 'Transaction'
   updateTransaction(
     # The 'Transaction' document's ID
     id: ID!
+
     # 'Transaction' input values
     data: TransactionInput!
   ): Transaction
+
   # Create a new document in the collection of 'Category'
   createCategory(
     # 'Category' input values
     data: CategoryInput!
   ): Category!
+
   # Update an existing document in the collection of 'Category'
   updateCategory(
     # The 'Category' document's ID
     id: ID!
+
     # 'Category' input values
     data: CategoryInput!
   ): Category
+
   # Delete an existing document in the collection of 'Category'
   deleteCategory(
     # The 'Category' document's ID
     id: ID!
   ): Category
+
   # Create a new document in the collection of 'Transaction'
   createTransaction(
     # 'Transaction' input values
     data: TransactionInput!
   ): Transaction!
+
   # Delete an existing document in the collection of 'Transaction'
   deleteTransaction(
     # The 'Transaction' document's ID
     id: ID!
   ): Transaction
-}
-
-type Query {
-  allCategories(
-    # The number of items to return per page.
-    _size: Int
-    # The pagination cursor.
-    _cursor: String
-  ): CategoryPage!
-  # Find a document from the collection of 'Category' by its id.
-  findCategoryByID(
-    # The 'Category' document's ID
-    id: ID!
-  ): Category
-  # Find a document from the collection of 'Transaction' by its id.
-  findTransactionByID(
-    # The 'Transaction' document's ID
-    id: ID!
-  ): Transaction
-  statementsByYear(
-    # The number of items to return per page.
-    _size: Int
-    # The pagination cursor.
-    _cursor: String
-    year: String!
-  ): StatementPage!
-  allStatements(
-    # The number of items to return per page.
-    _size: Int
-    # The pagination cursor.
-    _cursor: String
-  ): StatementPage!
-  # Find a document from the collection of 'Statement' by its id.
-  findStatementByID(
-    # The 'Statement' document's ID
-    id: ID!
-  ): Statement
-  statementByDate(date: String!): Statement
-}
-
-type Statement {
-  # The document's ID.
-  _id: ID!
-  year: String!
-  date: String!
-  transactions(
-    # The number of items to return per page.
-    _size: Int
-    # The pagination cursor.
-    _cursor: String
-  ): TransactionPage!
-  # The document's timestamp.
-  _ts: Long!
 }
 
 # 'Statement' input values
@@ -163,42 +95,25 @@ input StatementInput {
   transactions: StatementTransactionsRelation
 }
 
-# The pagination object for elements of type 'Statement'.
-type StatementPage {
-  # The elements of type 'Statement' in this page.
-  data: [Statement]!
-  # A cursor for elements coming after the current page.
-  after: String
-  # A cursor for elements coming before the current page.
-  before: String
-}
-
 # Allow manipulating the relationship between the types 'Statement' and 'Transaction'.
 input StatementTransactionsRelation {
   # Create one or more documents of type 'Transaction' and associate them with the current document.
   create: [TransactionInput]
+
   # Connect one or more documents of type 'Transaction' with the current document using their IDs.
   connect: [ID]
+
   # Disconnect the given documents of type 'Transaction' from the current document using their IDs.
   disconnect: [ID]
 }
 
 scalar Time
 
-type Transaction {
-  # The document's ID.
-  _id: ID!
-  statement: Statement
-  amount: Float!
-  category: Category!
-  # The document's timestamp.
-  _ts: Long!
-}
-
 # Allow manipulating the relationship between the types 'Transaction' and 'Category' using the field 'Transaction.category'.
 input TransactionCategoryRelation {
   # Create a document of type 'Category' and associate it with the current document.
   create: CategoryInput
+
   # Connect a document of type 'Category' with the current document using its ID.
   connect: ID
 }
@@ -210,22 +125,183 @@ input TransactionInput {
   category: TransactionCategoryRelation
 }
 
-# The pagination object for elements of type 'Transaction'.
-type TransactionPage {
-  # The elements of type 'Transaction' in this page.
-  data: [Transaction]!
-  # A cursor for elements coming after the current page.
-  after: String
-  # A cursor for elements coming before the current page.
-  before: String
-}
-
 # Allow manipulating the relationship between the types 'Transaction' and 'Statement' using the field 'Transaction.statement'.
 input TransactionStatementRelation {
   # Create a document of type 'Statement' and associate it with the current document.
   create: StatementInput
+
   # Connect a document of type 'Statement' with the current document using its ID.
   connect: ID
+
   # If true, disconnects this document from 'Statement'
   disconnect: Boolean
 }
+
+type Category {
+  externalUrl: String
+
+  # The document's ID.
+  _id: ID!
+  archived: Boolean!
+  title: String!
+  type: CategoryType!
+
+  # The document's timestamp.
+  _ts: Long!
+}
+
+# The pagination object for elements of type 'Category'.
+type CategoryPage {
+  # The elements of type 'Category' in this page.
+  data: [Category]!
+
+  # A cursor for elements coming after the current page.
+  after: String
+
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+  SAVING
+}
+
+type Query {
+  allStatementsSortedByYearDesc(
+    # The number of items to return per page.
+    _size: Int
+
+    # The pagination cursor.
+    _cursor: String
+  ): QueryAllStatementsSortedByYearDescPage!
+  allCategories(
+    # The number of items to return per page.
+    _size: Int
+
+    # The pagination cursor.
+    _cursor: String
+  ): CategoryPage!
+
+  # Find a document from the collection of 'Category' by its id.
+  findCategoryByID(
+    # The 'Category' document's ID
+    id: ID!
+  ): Category
+
+  # Find a document from the collection of 'Transaction' by its id.
+  findTransactionByID(
+    # The 'Transaction' document's ID
+    id: ID!
+  ): Transaction
+  statementsByYear(
+    # The number of items to return per page.
+    _size: Int
+
+    # The pagination cursor.
+    _cursor: String
+    year: String!
+  ): StatementPage!
+  allStatements(
+    # The number of items to return per page.
+    _size: Int
+
+    # The pagination cursor.
+    _cursor: String
+  ): StatementPage!
+  statementsByYearSortedDesc(
+    # The number of items to return per page.
+    _size: Int
+
+    # The pagination cursor.
+    _cursor: String
+    year: String!
+  ): QueryStatementsByYearSortedDescPage!
+
+  # Find a document from the collection of 'Statement' by its id.
+  findStatementByID(
+    # The 'Statement' document's ID
+    id: ID!
+  ): Statement
+  statementByDate(date: String!): Statement
+}
+
+# The pagination object for elements of type 'Statement'.
+type QueryAllStatementsSortedByYearDescPage {
+  # The elements of type 'Statement' in this page.
+  data: [Statement]!
+
+  # A cursor for elements coming after the current page.
+  after: String
+
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+# The pagination object for elements of type 'Statement'.
+type QueryStatementsByYearSortedDescPage {
+  # The elements of type 'Statement' in this page.
+  data: [Statement]!
+
+  # A cursor for elements coming after the current page.
+  after: String
+
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+type Statement {
+  # The document's ID.
+  _id: ID!
+  year: String!
+  date: String!
+  transactions(
+    # The number of items to return per page.
+    _size: Int
+
+    # The pagination cursor.
+    _cursor: String
+  ): TransactionPage!
+
+  # The document's timestamp.
+  _ts: Long!
+}
+
+# The pagination object for elements of type 'Statement'.
+type StatementPage {
+  # The elements of type 'Statement' in this page.
+  data: [Statement]!
+
+  # A cursor for elements coming after the current page.
+  after: String
+
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+type Transaction {
+  # The document's ID.
+  _id: ID!
+  statement: Statement
+  amount: Float!
+  category: Category!
+
+  # The document's timestamp.
+  _ts: Long!
+}
+
+# The pagination object for elements of type 'Transaction'.
+type TransactionPage {
+  # The elements of type 'Transaction' in this page.
+  data: [Transaction]!
+
+  # A cursor for elements coming after the current page.
+  after: String
+
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+# The `Long` scalar type represents non-fractional signed whole numeric values. Long can represent values between -(2^63) and 2^63 - 1.
+scalar Long
