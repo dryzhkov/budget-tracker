@@ -39,7 +39,7 @@ export function Categories() {
         <Card.Body>
           {active?.map((c) => {
             return (
-              <Link to={`/categories/${c?._id}`}>
+              <Link to={`/categories/${c?._id}`} key={c?._id}>
                 <Button
                   key={c?._id}
                   css={categoryButton}
@@ -64,7 +64,7 @@ export function Categories() {
         <Card.Body>
           {archived?.map((c) => {
             return (
-              <Link to={`/categories/${c?._id}`}>
+              <Link to={`/categories/${c?._id}`} key={c?._id}>
                 <Button
                   key={c?._id}
                   css={categoryButton}

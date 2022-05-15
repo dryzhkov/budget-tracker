@@ -2,6 +2,7 @@
 import {
   Category,
   CategoryType,
+  PaymentFrequency,
   Transaction,
   useAllCategoriesQuery,
   useAllStatementsQuery,
@@ -461,6 +462,7 @@ export function StatementEditor({
               >
                 {c?.title}
                 {getMostRecentlyUsed(c?.title)}
+                <span>{c?.paymentFrequency ?? PaymentFrequency.Biweekly}</span>
               </Button>
             );
           })}

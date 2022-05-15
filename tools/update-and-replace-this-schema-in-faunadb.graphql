@@ -3,12 +3,21 @@ type Category {
   title: String!
   type: CategoryType!
   externalUrl: String
+  paymentFrequency: PaymentFrequency
 }
 
 enum CategoryType {
   INCOME
   EXPENSE
   SAVING
+}
+
+enum PaymentFrequency {
+  BIWEEKLY
+  MONTHLY
+  BIMONTLY
+  QUARTERLY
+  OTHER
 }
 
 type Statement {

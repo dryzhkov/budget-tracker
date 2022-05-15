@@ -19,11 +19,30 @@ input CategoryInput {
   title: String!
   type: CategoryType!
   externalUrl: String
+  paymentFrequency: PaymentFrequency
 }
 
 scalar Date
 
 type Mutation {
+  # Partially updates an existing document in the collection of 'Category'. It only modifies the values that are specified in the arguments. During execution, it verifies that required fields are not set to 'null'.
+  partialUpdateCategory(
+    # The 'Category' document's ID
+    id: ID!
+
+    # 'Category' input values
+    data: PartialUpdateCategoryInput!
+  ): Category
+
+  # Partially updates an existing document in the collection of 'Transaction'. It only modifies the values that are specified in the arguments. During execution, it verifies that required fields are not set to 'null'.
+  partialUpdateTransaction(
+    # The 'Transaction' document's ID
+    id: ID!
+
+    # 'Transaction' input values
+    data: PartialUpdateTransactionInput!
+  ): Transaction
+
   # Create a new document in the collection of 'Statement'
   createStatement(
     # 'Statement' input values
@@ -81,11 +100,43 @@ type Mutation {
     data: TransactionInput!
   ): Transaction!
 
+  # Partially updates an existing document in the collection of 'Statement'. It only modifies the values that are specified in the arguments. During execution, it verifies that required fields are not set to 'null'.
+  partialUpdateStatement(
+    # The 'Statement' document's ID
+    id: ID!
+
+    # 'Statement' input values
+    data: PartialUpdateStatementInput!
+  ): Statement
+
   # Delete an existing document in the collection of 'Transaction'
   deleteTransaction(
     # The 'Transaction' document's ID
     id: ID!
   ): Transaction
+}
+
+# 'Category' input values
+input PartialUpdateCategoryInput {
+  archived: Boolean
+  title: String
+  type: CategoryType
+  externalUrl: String
+  paymentFrequency: PaymentFrequency
+}
+
+# 'Statement' input values
+input PartialUpdateStatementInput {
+  date: String
+  year: String
+  transactions: StatementTransactionsRelation
+}
+
+# 'Transaction' input values
+input PartialUpdateTransactionInput {
+  statement: TransactionStatementRelation
+  amount: Float
+  category: TransactionCategoryRelation
 }
 
 # 'Statement' input values
@@ -143,6 +194,7 @@ type Category {
   # The document's ID.
   _id: ID!
   archived: Boolean!
+  paymentFrequency: PaymentFrequency
   title: String!
   type: CategoryType!
 
@@ -166,6 +218,14 @@ enum CategoryType {
   INCOME
   EXPENSE
   SAVING
+}
+
+enum PaymentFrequency {
+  BIWEEKLY
+  MONTHLY
+  BIMONTLY
+  QUARTERLY
+  OTHER
 }
 
 type Query {

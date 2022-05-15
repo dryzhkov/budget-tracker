@@ -6,5 +6,6 @@ query GetCategoryById($id: ID!) {
     type
     externalUrl
     archived
+    paymentFrequency
   }
 }
