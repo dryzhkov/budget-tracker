@@ -71,6 +71,7 @@
     "react-icons": "^4.3.1",
     "react-refresh": "^0.8.3",
     "react-router-dom": "^6.0.2",
+    "recharts": "^2.9.3",
     "resolve": "1.18.1",
     "resolve-url-loader": "^3.1.2",
     "sass-loader": "^10.0.5",
