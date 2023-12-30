@@ -1,9 +1,0 @@
-query GetStatementsByYear($year: String!) {
-  statementsByYearSortedDesc(year: $year) {
-    data {
-      _id
-      date
-      year
-    }
-  }
-}

@@ -1,5 +1,0 @@
-mutation UpdateTransaction($id: ID!, $data: TransactionInput!) {
-  updateTransaction(id: $id, data: $data) {
-    _id
-  }
-}
