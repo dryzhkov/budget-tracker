@@ -14,25 +14,44 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  password Password?
-  notes    Note[]
+  password   Password?
+  statements Statement[]
+  invoices   Invoice[]
 }
 
 model Password {
-  hash String
-
+  hash   String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String @unique
 }
 
-model Note {
-  id    String @id @default(cuid())
-  title String
-  body  String
+model Statement {
+  id           Int           @id @default(autoincrement())
+  date         DateTime
+  User         User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId       String
+  transactions Transaction[]
+}
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Transaction {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Statement   Statement @relation(fields: [statementId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  statementId Int
+  amount      Decimal
+  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  invoiceId   Int       @unique
+}
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String
+model Invoice {
+  id          Int          @id @default(autoincrement())
+  title       String
+  category    String       @default("income") // income | expense | saving
+  state       String       @default("active") // active | archived
+  frequency   String       @default("bi-weekly") // 'bi-weekly' | 'monthly' | 'bi-monthly' | 'quaterly' | 'one-off'
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId      String
+  externalUrl String?
+  Transaction Transaction?
 }

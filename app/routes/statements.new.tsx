@@ -3,7 +3,7 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
-import { createNote } from "~/models/note.server";
+import { createStatement } from "~/models/statement.server";
 import { requireUserId } from "~/session.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -26,13 +26,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       { status: 400 },
     );
   }
+  // TODO: fix date param
+  const statement = await createStatement({ userId, date: new Date() });
 
-  const note = await createNote({ body, title, userId });
-
-  return redirect(`/notes/${note.id}`);
+  return redirect(`/statements/${statement.id}`);
 };
 
-export default function NewNotePage() {
+export default function NewStatementPage() {
   const actionData = useActionData<typeof action>();
   const titleRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
