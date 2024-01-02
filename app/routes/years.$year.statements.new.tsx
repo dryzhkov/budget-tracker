@@ -6,9 +6,9 @@ import { useEffect, useRef } from "react";
 import { createStatement } from "~/models/statement.server";
 import { requireUserId } from "~/session.server";
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   const userId = await requireUserId(request);
-
+  const { year } = params;
   const formData = await request.formData();
   const title = formData.get("title");
   const body = formData.get("body");
@@ -27,7 +27,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   }
   // TODO: fix date param
-  const statement = await createStatement({ userId, date: new Date() });
+  const statement = await createStatement({
+    userId,
+    date: new Date(),
+    year: Number(year),
+  });
 
   return redirect(`/statements/${statement.id}`);
 };

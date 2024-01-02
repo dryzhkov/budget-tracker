@@ -32,9 +32,11 @@ async function seed() {
     },
   });
 
-  const statement = await prisma.statement.create({
+  // first statment
+  let statement = await prisma.statement.create({
     data: {
       date: new Date("2023-12-30"),
+      year: 2023,
       userId: user.id,
     },
   });
@@ -42,6 +44,40 @@ async function seed() {
   await prisma.transaction.create({
     data: {
       amount: 5000,
+      statementId: statement.id,
+      invoiceId: invoice.id,
+    },
+  });
+
+  // second statment
+  statement = await prisma.statement.create({
+    data: {
+      date: new Date("2023-12-15"),
+      year: 2023,
+      userId: user.id,
+    },
+  });
+
+  await prisma.transaction.create({
+    data: {
+      amount: 5001,
+      statementId: statement.id,
+      invoiceId: invoice.id,
+    },
+  });
+
+  // third statment
+  statement = await prisma.statement.create({
+    data: {
+      date: new Date("2024-01-15"),
+      year: 2024,
+      userId: user.id,
+    },
+  });
+
+  await prisma.transaction.create({
+    data: {
+      amount: 5002,
       statementId: statement.id,
       invoiceId: invoice.id,
     },

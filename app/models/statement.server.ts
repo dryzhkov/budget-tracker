@@ -16,13 +16,12 @@ export function getStatement({
 
 export function getStatementListItems({
   userId,
-  date,
-}: {
+  year,
+}: Pick<Statement, "year"> & {
   userId: User["id"];
-  date: Date;
 }) {
   return prisma.statement.findMany({
-    where: { userId, date },
+    where: { userId, year: { equals: year } },
     select: { id: true, date: true },
     orderBy: { date: "desc" },
   });
@@ -31,12 +30,14 @@ export function getStatementListItems({
 export function createStatement({
   userId,
   date,
-}: Pick<Statement, "date"> & {
+  year,
+}: Pick<Statement, "date" | "year"> & {
   userId: User["id"];
 }) {
   return prisma.statement.create({
     data: {
       date,
+      year,
       userId,
     },
   });

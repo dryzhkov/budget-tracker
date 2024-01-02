@@ -28,6 +28,7 @@ model Password {
 model Statement {
   id           Int           @id @default(autoincrement())
   date         DateTime
+  year         Int
   User         User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId       String
   transactions Transaction[]
@@ -40,18 +41,18 @@ model Transaction {
   Statement   Statement @relation(fields: [statementId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   statementId Int
   amount      Decimal
-  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  invoiceId   Int       @unique
+  invoiceId   Int
+  invoice     Invoice   @relation(fields: [invoiceId], references: [id])
 }
 
 model Invoice {
-  id          Int          @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   title       String
-  category    String       @default("income") // income | expense | saving
-  state       String       @default("active") // active | archived
-  frequency   String       @default("bi-weekly") // 'bi-weekly' | 'monthly' | 'bi-monthly' | 'quaterly' | 'one-off'
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  category    String        @default("income") // income | expense | saving
+  state       String        @default("active") // active | archived
+  frequency   String        @default("bi-weekly") // 'bi-weekly' | 'monthly' | 'bi-monthly' | 'quaterly' | 'one-off'
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId      String
   externalUrl String?
-  Transaction Transaction?
+  Transaction Transaction[]
 }
