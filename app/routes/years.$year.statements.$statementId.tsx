@@ -31,7 +31,7 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
 
   await deleteStatement({ id: Number(params.statementId), userId });
 
-  return redirect("/statements");
+  return redirect(`/years/${params.year}/statements`);
 };
 
 export default function StatementDetailsPage() {

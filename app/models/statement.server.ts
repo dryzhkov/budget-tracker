@@ -51,3 +51,16 @@ export function deleteStatement({
     where: { id, userId },
   });
 }
+
+export function getStatementYears({ userId }: { userId: User["id"] }) {
+  return prisma.statement.findMany({
+    distinct: ["year"],
+    where: {
+      userId,
+    },
+    select: {
+      year: true,
+    },
+    orderBy: { year: "desc" },
+  });
+}

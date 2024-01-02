@@ -6,46 +6,47 @@ import { useEffect, useRef } from "react";
 import { createStatement } from "~/models/statement.server";
 import { requireUserId } from "~/session.server";
 
-export const action = async ({ request, params }: ActionFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const userId = await requireUserId(request);
-  const { year } = params;
   const formData = await request.formData();
-  const title = formData.get("title");
-  const body = formData.get("body");
+  const rawDate = formData.get("date");
 
-  if (typeof title !== "string" || title.length === 0) {
+  console.log("date", formData.get("date"));
+
+  if (typeof rawDate !== "string" || rawDate.length === 0) {
     return json(
-      { errors: { body: null, title: "Title is required" } },
+      { errors: { body: null, date: "Date is required" } },
       { status: 400 },
     );
   }
 
-  if (typeof body !== "string" || body.length === 0) {
+  const date = new Date(rawDate);
+
+  if (isNaN(date.getTime())) {
     return json(
-      { errors: { body: "Body is required", title: null } },
+      { errors: { body: null, date: "Date must be valid" } },
       { status: 400 },
     );
   }
-  // TODO: fix date param
+
+  const year = Number(date.getFullYear());
+
   const statement = await createStatement({
     userId,
-    date: new Date(),
-    year: Number(year),
+    date,
+    year,
   });
 
-  return redirect(`/statements/${statement.id}`);
+  return redirect(`/years/${year}/statements/${statement.id}`);
 };
 
 export default function NewStatementPage() {
   const actionData = useActionData<typeof action>();
-  const titleRef = useRef<HTMLInputElement>(null);
-  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const dateRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (actionData?.errors?.title) {
-      titleRef.current?.focus();
-    } else if (actionData?.errors?.body) {
-      bodyRef.current?.focus();
+    if (actionData?.errors?.date) {
+      dateRef.current?.focus();
     }
   }, [actionData]);
 
@@ -60,42 +61,22 @@ export default function NewStatementPage() {
       }}
     >
       <div>
-        <label className="flex w-full flex-col gap-1">
-          <span>Title: </span>
+        <label className="flex w-full flex-col gap-1" htmlFor="datepicker">
+          <span>Select a date: </span>
           <input
-            ref={titleRef}
-            name="title"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
-            aria-invalid={actionData?.errors?.title ? true : undefined}
+            type="date"
+            id="datepicker"
+            name="date"
+            ref={dateRef}
+            aria-invalid={actionData?.errors?.date ? true : undefined}
             aria-errormessage={
-              actionData?.errors?.title ? "title-error" : undefined
+              actionData?.errors?.date ? "date-error" : undefined
             }
           />
         </label>
-        {actionData?.errors?.title ? (
+        {actionData?.errors?.date ? (
           <div className="pt-1 text-red-700" id="title-error">
-            {actionData.errors.title}
-          </div>
-        ) : null}
-      </div>
-
-      <div>
-        <label className="flex w-full flex-col gap-1">
-          <span>Body: </span>
-          <textarea
-            ref={bodyRef}
-            name="body"
-            rows={8}
-            className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
-            aria-invalid={actionData?.errors?.body ? true : undefined}
-            aria-errormessage={
-              actionData?.errors?.body ? "body-error" : undefined
-            }
-          />
-        </label>
-        {actionData?.errors?.body ? (
-          <div className="pt-1 text-red-700" id="body-error">
-            {actionData.errors.body}
+            {actionData.errors.date}
           </div>
         ) : null}
       </div>

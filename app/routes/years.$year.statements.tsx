@@ -11,7 +11,10 @@ import {
 } from "@remix-run/react";
 
 import { YearPicker } from "~/components/yearPicker";
-import { getStatementListItems } from "~/models/statement.server";
+import {
+  getStatementListItems,
+  getStatementYears,
+} from "~/models/statement.server";
 import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
 
@@ -22,11 +25,14 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     userId,
     year: Number(year),
   });
-  return json({ statements });
+
+  const years = (await getStatementYears({ userId })).map((col) => col.year);
+
+  return json({ statements, years });
 };
 
 export default function StatementsPage() {
-  const { statements } = useLoaderData<typeof loader>();
+  const { statements, years } = useLoaderData<typeof loader>();
   const user = useUser();
 
   const { year } = useParams();
@@ -59,7 +65,7 @@ export default function StatementsPage() {
             <YearPicker
               onYearChange={handleYearChange}
               defaultValue={year ? Number(year) : new Date().getFullYear()}
-              years={[2024, 2023, 2022, 2021, 2020]}
+              years={years}
             />
           </div>
           <hr />
@@ -67,7 +73,6 @@ export default function StatementsPage() {
           <Link to="new" className="block p-4 text-xl text-blue-500">
             + New Statement
           </Link>
-
           <hr />
 
           {statements.length === 0 ? (
@@ -82,7 +87,7 @@ export default function StatementsPage() {
                     }
                     to={statement.id.toString()}
                   >
-                    📝 {new Date(statement.date).toLocaleDateString()}
+                    📝 {new Date(statement.date).toISOString().split("T")[0]}
                   </NavLink>
                 </li>
               ))}
