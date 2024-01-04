@@ -28,14 +28,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     throw new Response("Not Found", { status: 404 });
   }
 
-  console.log("statement", statement);
-  if (statement.transactions.length > 0) {
-    console.log("invoice", statement.transactions[0].invoice);
-  }
-
   const invoices = await getInvoices(userId);
-
-  console.log("invoices", invoices);
 
   return json({ statement, invoices });
 };

@@ -29,16 +29,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const year = Number(date.getFullYear());
 
-  const statement = await createStatement({
+  await createStatement({
     userId,
     date,
     year,
   });
 
-  return redirect(`/years/${year}/statements/${statement.id}`);
+  return redirect(".");
 };
 
-export default function NewStatementPage() {
+export default function NewInvoicePage() {
   const actionData = useActionData<typeof action>();
   const dateRef = useRef<HTMLInputElement>(null);
 

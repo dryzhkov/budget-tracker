@@ -1,7 +1,6 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
-  Form,
   Link,
   NavLink,
   Outlet,
@@ -10,10 +9,11 @@ import {
   useParams,
 } from "@remix-run/react";
 
+import { Header } from "~/components/header";
 import { YearPicker } from "~/components/yearPicker";
 import { getStatementListItems, getStatementYears } from "~/models/statement";
 import { requireUserId } from "~/session.server";
-import { formatDate, useUser } from "~/utils";
+import { formatDate } from "~/utils";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);
@@ -30,7 +30,6 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 
 export default function StatementsPage() {
   const { statements, years } = useLoaderData<typeof loader>();
-  const user = useUser();
 
   const { year } = useParams();
   const navigate = useNavigate();
@@ -41,20 +40,7 @@ export default function StatementsPage() {
 
   return (
     <div className="flex h-full min-h-screen flex-col">
-      <header className="flex items-center justify-between bg-slate-800 p-4 text-white">
-        <h1 className="text-3xl font-bold">
-          <Link to=".">Statements</Link>
-        </h1>
-        <p className="leading-10">{user.email}</p>
-        <Form action="/logout" method="post">
-          <button
-            type="submit"
-            className="rounded bg-slate-600 px-4 py-2 text-blue-100 hover:bg-blue-500 active:bg-blue-600"
-          >
-            Logout
-          </button>
-        </Form>
-      </header>
+      <Header linkText="Statements" />
 
       <main className="flex h-full bg-white">
         <div className="h-full w-80 border-r bg-gray-50">
