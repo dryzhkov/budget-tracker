@@ -2,14 +2,35 @@ import type { User, Statement } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 
-export function getStatement({
+export function getStatementWithTransactions({
   id,
   userId,
 }: Pick<Statement, "id"> & {
   userId: User["id"];
 }) {
   return prisma.statement.findFirst({
-    select: { id: true, date: true },
+    select: {
+      id: true,
+      date: true,
+      transactions: {
+        select: {
+          id: true,
+          createdAt: true,
+          invoiceId: true,
+          amount: true,
+          invoice: {
+            select: {
+              id: true,
+              title: true,
+              category: true,
+              state: true,
+              frequency: true,
+              externalUrl: true,
+            },
+          },
+        },
+      },
+    },
     where: { id, userId },
   });
 }

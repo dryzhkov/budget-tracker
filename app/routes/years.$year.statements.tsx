@@ -11,12 +11,9 @@ import {
 } from "@remix-run/react";
 
 import { YearPicker } from "~/components/yearPicker";
-import {
-  getStatementListItems,
-  getStatementYears,
-} from "~/models/statement.server";
+import { getStatementListItems, getStatementYears } from "~/models/statement";
 import { requireUserId } from "~/session.server";
-import { useUser } from "~/utils";
+import { formatDate, useUser } from "~/utils";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);
@@ -48,7 +45,7 @@ export default function StatementsPage() {
         <h1 className="text-3xl font-bold">
           <Link to=".">Statements</Link>
         </h1>
-        <p>{user.email}</p>
+        <p className="leading-10">{user.email}</p>
         <Form action="/logout" method="post">
           <button
             type="submit"
@@ -87,7 +84,7 @@ export default function StatementsPage() {
                     }
                     to={statement.id.toString()}
                   >
-                    📝 {new Date(statement.date).toISOString().split("T")[0]}
+                    📝 {formatDate(statement.date)}
                   </NavLink>
                 </li>
               ))}

@@ -1,7 +1,7 @@
 import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
 
-import type { User } from "~/models/user.server";
+import type { User } from "~/models/user";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -73,4 +73,23 @@ export function useUser(): User {
 
 export function validateEmail(email: unknown): email is string {
   return typeof email === "string" && email.length > 3 && email.includes("@");
+}
+
+export function formatDate(input: string) {
+  return new Date(input).toISOString().split("T")[0];
+}
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+export function formatCurrency(input: string | number) {
+  let amount = 0;
+  if (typeof input === "string") {
+    amount = Number(input);
+  } else {
+    amount = input;
+  }
+
+  return currencyFormatter.format(amount);
 }

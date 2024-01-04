@@ -3,7 +3,7 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
-import { createStatement } from "~/models/statement.server";
+import { createStatement } from "~/models/statement";
 import { requireUserId } from "~/session.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -67,6 +67,7 @@ export default function NewStatementPage() {
             type="date"
             id="datepicker"
             name="date"
+            className="max-w-32"
             ref={dateRef}
             aria-invalid={actionData?.errors?.date ? true : undefined}
             aria-errormessage={
