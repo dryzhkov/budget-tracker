@@ -2,7 +2,7 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { NavLink, useLoaderData } from "@remix-run/react";
 
-import { getInvoices } from "~/models/invoice";
+import { getInvoices } from "~/models/invoice.server";
 import { requireUserId } from "~/session.server";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);

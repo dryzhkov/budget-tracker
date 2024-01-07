@@ -139,7 +139,7 @@ export function InvoiceForm({ action, invoice }: InvoiceFormProps) {
           type="submit"
           name="intent"
           value="save"
-          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+          className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 focus:bg-green-400"
         >
           Save
         </button>

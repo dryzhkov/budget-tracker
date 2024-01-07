@@ -11,8 +11,8 @@ export function YearPicker({
 }: YearPickerProps) {
   return (
     <>
-      <label htmlFor="years" className="mb-2 text-sm font-medium text-gray-900">
-        Select a year
+      <label htmlFor="years" className="mb-2 text-md font-medium text-gray-900">
+        Select a year:
       </label>
       <select
         id="years"

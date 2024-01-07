@@ -11,7 +11,10 @@ import {
 
 import { Header } from "~/components/header";
 import { YearPicker } from "~/components/yearPicker";
-import { getStatementListItems, getStatementYears } from "~/models/statement";
+import {
+  getStatementListItems,
+  getStatementYears,
+} from "~/models/statement.server";
 import { requireUserId } from "~/session.server";
 import { formatDate } from "~/utils";
 
@@ -43,7 +46,14 @@ export default function StatementsPage() {
       <Header linkText="Statements" />
 
       <main className="flex h-full bg-white">
-        <div className="h-full w-80 border-r bg-gray-50">
+        <div className="h-full w-48 border-r bg-gray-50">
+          <Link
+            to="new"
+            className="block p-4 text-md text-blue-500 hover:text-blue-600"
+          >
+            + New Statement
+          </Link>
+          <hr />
           <div className="p-4">
             <YearPicker
               onYearChange={handleYearChange}
@@ -51,11 +61,6 @@ export default function StatementsPage() {
               years={years}
             />
           </div>
-          <hr />
-
-          <Link to="new" className="block p-4 text-xl text-blue-500">
-            + New Statement
-          </Link>
           <hr />
 
           {statements.length === 0 ? (
@@ -66,7 +71,7 @@ export default function StatementsPage() {
                 <li key={statement.id}>
                   <NavLink
                     className={({ isActive }) =>
-                      `block border-b p-4 text-xl ${isActive ? "bg-white" : ""}`
+                      `block border-b p-4 text-md ${isActive ? "bg-white" : ""}`
                     }
                     to={statement.id.toString()}
                   >

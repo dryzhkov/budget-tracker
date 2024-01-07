@@ -2,7 +2,7 @@ import type { ActionFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 
 import { InvoiceForm } from "~/components/invoiceForm";
-import { createInvoice } from "~/models/invoice";
+import { createInvoice } from "~/models/invoice.server";
 import { requireUserId } from "~/session.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {

@@ -4,7 +4,7 @@ import { useLoaderData } from "@remix-run/react";
 
 import { InvoiceForm } from "~/components/invoiceForm";
 import { prisma } from "~/db.server";
-import { deleteInvoice, updateInvoice } from "~/models/invoice";
+import { deleteInvoice, updateInvoice } from "~/models/invoice.server";
 import { requireUserId } from "~/session.server";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
