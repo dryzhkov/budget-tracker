@@ -24,7 +24,7 @@ export default function InvoicesIndexPage() {
         <li key={invoice.id}>
           <NavLink
             className={({ isActive }) =>
-              `block border-b p-4 text-xl ${isActive ? "bg-white" : ""}`
+              `block border-b p-4 text-md ${isActive ? "bg-white" : ""}`
             }
             to={invoice.id.toString()}
           >

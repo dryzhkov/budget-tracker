@@ -43,7 +43,7 @@ export default function StatementsPage() {
 
   return (
     <div className="flex h-full min-h-screen flex-col">
-      <Header linkText="Statements" />
+      <Header />
 
       <main className="flex h-full bg-white">
         <div className="h-full w-48 border-r bg-gray-50">
