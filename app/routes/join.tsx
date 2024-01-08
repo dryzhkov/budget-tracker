@@ -7,9 +7,9 @@ import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
-import { createUser, getUserByEmail } from "~/models/user.server";
-import { createUserSession, getUserId } from "~/session.server";
-import { safeRedirect, validateEmail } from "~/utils";
+import { getUserByEmail } from "~/models/user.server";
+import { getUserId } from "~/session.server";
+import { validateEmail } from "~/utils";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await getUserId(request);
@@ -21,7 +21,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
+  // const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
 
   if (!validateEmail(email)) {
     return json(
@@ -57,14 +57,24 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   }
 
-  const user = await createUser(email, password);
+  // const user = await createUser(email, password);
 
-  return createUserSession({
-    redirectTo,
-    remember: false,
-    request,
-    userId: user.id,
-  });
+  // return createUserSession({
+  //   redirectTo,
+  //   remember: false,
+  //   request,
+  //   userId: user.id,
+  // });
+
+  return json(
+    {
+      errors: {
+        email: "No new signups at this time, sorry",
+        password: null,
+      },
+    },
+    { status: 400 },
+  );
 };
 
 export const meta: MetaFunction = () => [{ title: "Sign Up" }];
