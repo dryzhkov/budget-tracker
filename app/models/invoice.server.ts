@@ -78,5 +78,32 @@ export function getInvoice({
 }: Pick<Invoice, "id"> & { userId: User["id"] }) {
   return prisma.invoice.findFirst({
     where: { id, userId },
+    select: {
+      id: true,
+      title: true,
+      category: true,
+      state: true,
+      frequency: true,
+      externalUrl: true,
+      Transaction: {
+        orderBy: {
+          Statement: {
+            date: "desc",
+          },
+        },
+        select: {
+          id: true,
+          amount: true,
+          createdAt: true,
+          Statement: {
+            select: {
+              id: true,
+              date: true,
+              year: true,
+            },
+          },
+        },
+      },
+    },
   });
 }

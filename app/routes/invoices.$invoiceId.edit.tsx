@@ -114,7 +114,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   return redirect("/invoices");
 };
 
-export default function NewInvoicePage() {
+export default function EditInvoicePage() {
   const { invoice } = useLoaderData<typeof loader>();
   return <InvoiceForm action={action} invoice={invoice} />;
 }
