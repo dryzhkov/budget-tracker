@@ -261,7 +261,7 @@ export default function StatementDetailsPage() {
           </button>
         </Form>
       </div>
-      <div className="max-w-sm ml-5">
+      <div className="ml-5">
         <div className="flex space-x-4">
           {invoices.map((invoice) => {
             if (existingInvoices.has(invoice.id)) {
