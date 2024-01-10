@@ -4,12 +4,15 @@ import { json, redirect } from "@remix-run/node";
 import {
   Form,
   isRouteErrorResponse,
+  useFetcher,
   useLoaderData,
+  useNavigation,
   useRouteError,
 } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 
+import { Spinner } from "~/components/spinner";
 import { prisma } from "~/db.server";
 import { getInvoices } from "~/models/invoice.server";
 import {
@@ -118,7 +121,7 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
       }
     }
 
-    return redirect(".");
+    return json({ ok: true });
   }
 };
 
@@ -159,7 +162,10 @@ export default function StatementDetailsPage() {
   const [transactionAmount, setTransactionAmount] = useState(0);
   const [transactionId, setTransactionId] = useState<number | null>(null);
   const [popupIntent, setPopupIntent] = useState<"add" | "update">("add");
+  const fetcher = useFetcher();
+  const isSubmitting = fetcher.state !== "idle";
 
+  const navigation = useNavigation();
   const existingInvoices = new Set<number>();
 
   const getTransactions = (group: string) => {
@@ -198,6 +204,10 @@ export default function StatementDetailsPage() {
     };
   };
   let grandTotal = 0;
+
+  if (isSubmitting || navigation.state === "loading") {
+    return <Spinner />;
+  }
 
   return (
     <div className="flex">
@@ -298,7 +308,7 @@ export default function StatementDetailsPage() {
           } fixed inset-0 bg-gray-800 bg-opacity-75 z-50 flex items-center justify-center`}
         >
           <div className="bg-white p-8 rounded shadow-md w-96">
-            <Form method="post">
+            <fetcher.Form method="post">
               <h2>{invoice?.title ?? ""}</h2>
               <label htmlFor="amount">Amount:</label>
               <span>$</span>
@@ -318,6 +328,7 @@ export default function StatementDetailsPage() {
               <hr className="my-4" />
               <button
                 type="submit"
+                disabled={isSubmitting}
                 name="intent"
                 value={popupIntent}
                 className="rounded mr-4 bg-green-500 px-4 py-2 text-white hover:bg-green-600 focus:bg-green-400"
@@ -327,6 +338,7 @@ export default function StatementDetailsPage() {
               </button>
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className="rounded  mr-4 bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
                 onClick={(ev) => {
                   ev.preventDefault();
@@ -338,16 +350,19 @@ export default function StatementDetailsPage() {
               >
                 Close
               </button>
-              <button
-                type="submit"
-                name="intent"
-                value="deleteTransaction"
-                className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 focus:bg-red-400"
-                onClick={() => setPopupVisible(false)}
-              >
-                Delete
-              </button>
-            </Form>
+              {popupIntent === "update" ? (
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  name="intent"
+                  value="deleteTransaction"
+                  className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 focus:bg-red-400"
+                  onClick={() => setPopupVisible(false)}
+                >
+                  Delete
+                </button>
+              ) : null}
+            </fetcher.Form>
           </div>
         </div>
       </div>
