@@ -9,7 +9,7 @@ import {
   useNavigation,
   useRouteError,
 } from "@remix-run/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
 
 import { Spinner } from "~/components/spinner";
@@ -154,19 +154,40 @@ const groups: { group: PageGroup; bgColor: string; hoverBgColor: string }[] = [
     hoverBgColor: "hover:bg-blue-200",
   },
 ];
+
 export default function StatementDetailsPage() {
   const { statement, invoices } = useLoaderData<typeof loader>();
   const { transactions } = statement;
-  const [invoice, setInvoice] = useState<(typeof invoices)[0] | null>(null);
-  const [popupVisible, setPopupVisible] = useState(false);
-  const [transactionAmount, setTransactionAmount] = useState(0);
-  const [transactionId, setTransactionId] = useState<number | null>(null);
-  const [popupIntent, setPopupIntent] = useState<"add" | "update">("add");
+
+  const [selected, setSelected] = useState<{
+    transactionId?: number;
+    invoice: (typeof invoices)[0];
+    amount: number;
+    popupIntent: "add" | "update";
+  } | null>(null);
+
   const fetcher = useFetcher();
-  const isSubmitting = fetcher.state !== "idle";
+  const isSubmitting = fetcher.state === "submitting";
+  const isLoading = fetcher.state === "loading";
 
   const navigation = useNavigation();
   const existingInvoices = new Set<number>();
+
+  const amountFormRef = useRef<HTMLFormElement>(null);
+  const amountRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!isSubmitting) {
+      amountFormRef.current?.reset();
+      setSelected(null);
+    }
+  }, [isSubmitting]);
+
+  useEffect(() => {
+    if (selected) {
+      amountRef.current?.focus();
+    }
+  }, [selected]);
 
   const getTransactions = (group: string) => {
     const filtered = transactions.filter(
@@ -182,11 +203,12 @@ export default function StatementDetailsPage() {
           <button
             key={transaction.id}
             onClick={() => {
-              setPopupVisible(true);
-              setInvoice(transaction.invoice);
-              setTransactionId(transaction.id);
-              setTransactionAmount(Number(transaction.amount));
-              setPopupIntent("update");
+              setSelected({
+                transactionId: transaction.id,
+                invoice: transaction.invoice,
+                amount: Number(transaction.amount),
+                popupIntent: "update",
+              });
             }}
             className="cursor-pointer block w-full text-left"
           >
@@ -205,7 +227,7 @@ export default function StatementDetailsPage() {
   };
   let grandTotal = 0;
 
-  if (isSubmitting || navigation.state === "loading") {
+  if (isLoading || navigation.state === "loading") {
     return <Spinner />;
   }
 
@@ -289,11 +311,12 @@ export default function StatementDetailsPage() {
                 className={`${bgColor} ${hoverBgColor} py-2 px-4 rounded text-gray-500 dark:text-gray-400`}
                 key={invoice.id}
                 onClick={() => {
-                  setPopupVisible(true);
-                  setInvoice(invoice);
-                  setTransactionAmount(0);
-                  setPopupIntent("add");
-                  setTransactionId(null);
+                  setSelected({
+                    transactionId: undefined,
+                    invoice: invoice,
+                    amount: 0,
+                    popupIntent: "add",
+                  });
                 }}
               >
                 {invoice.title}
@@ -304,60 +327,69 @@ export default function StatementDetailsPage() {
 
         <div
           className={`${
-            popupVisible ? undefined : "hidden"
+            selected ? undefined : "hidden"
           } fixed inset-0 bg-gray-800 bg-opacity-75 z-50 flex items-center justify-center`}
         >
           <div className="bg-white p-8 rounded shadow-md w-96">
-            <fetcher.Form method="post">
-              <h2>{invoice?.title ?? ""}</h2>
-              <label htmlFor="amount">Amount:</label>
-              <span>$</span>
+            <fetcher.Form method="post" ref={amountFormRef}>
+              <h2 className="mb-4">
+                Payment for {selected?.invoice.title ?? ""}
+              </h2>
+              <div className="mb-4">
+                <label
+                  htmlFor="amount"
+                  className="block text-gray-600 text-sm font-medium"
+                >
+                  Amount:
+                </label>
+                <input
+                  type="number"
+                  name="amount"
+                  step=".01"
+                  min="0"
+                  ref={amountRef}
+                  className="mt-1 p-2 w-full border rounded-md"
+                  defaultValue={selected?.amount ?? 0}
+                />
+              </div>
               <input
-                type="number"
-                name="amount"
-                min="0"
-                value={transactionAmount}
-                onChange={(ev) => setTransactionAmount(Number(ev.target.value))}
+                type="hidden"
+                name="invoiceId"
+                value={selected?.invoice.id ?? ""}
               />
-              <input type="hidden" name="invoiceId" value={invoice?.id ?? ""} />
               <input
                 type="hidden"
                 name="transactionId"
-                value={transactionId ?? undefined}
+                value={selected?.transactionId ?? undefined}
               />
-              <hr className="my-4" />
+
               <button
                 type="submit"
                 disabled={isSubmitting}
                 name="intent"
-                value={popupIntent}
+                value={selected?.popupIntent}
                 className="rounded mr-4 bg-green-500 px-4 py-2 text-white hover:bg-green-600 focus:bg-green-400"
-                onClick={() => setPopupVisible(false)}
               >
-                {popupIntent === "add" ? "Add" : "Update"}
+                {selected?.popupIntent === "add" ? "Add" : "Update"}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded  mr-4 bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+                className="rounded mr-4 bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
                 onClick={(ev) => {
                   ev.preventDefault();
-                  setInvoice(null);
-                  setPopupVisible(false);
-                  setTransactionAmount(0);
-                  setTransactionId(null);
+                  setSelected(null);
                 }}
               >
                 Close
               </button>
-              {popupIntent === "update" ? (
+              {selected?.popupIntent === "update" ? (
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   name="intent"
                   value="deleteTransaction"
                   className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 focus:bg-red-400"
-                  onClick={() => setPopupVisible(false)}
                 >
                   Delete
                 </button>
