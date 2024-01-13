@@ -161,7 +161,7 @@ export default function StatementDetailsPage() {
 
   const [selected, setSelected] = useState<{
     transactionId?: number;
-    invoice: (typeof invoices)[0];
+    invoice: Pick<(typeof invoices)[0], "title" | "id">;
     amount: number;
     popupIntent: "add" | "update";
   } | null>(null);
@@ -193,6 +193,7 @@ export default function StatementDetailsPage() {
     const filtered = transactions.filter(
       (item) => item.invoice.category === group.toLowerCase(),
     );
+
     let total = 0;
     let list: React.ReactElement[] = [];
     if (filtered.length > 0) {
@@ -225,6 +226,7 @@ export default function StatementDetailsPage() {
       total,
     };
   };
+
   let grandTotal = 0;
 
   if (isLoading || navigation.state === "loading") {
@@ -308,8 +310,8 @@ export default function StatementDetailsPage() {
 
             return (
               <button
-                className={`${bgColor} ${hoverBgColor} py-2 px-4 rounded text-gray-500 dark:text-gray-400`}
                 key={invoice.id}
+                className={`${bgColor} ${hoverBgColor} py-2 px-4 rounded text-gray-500 dark:text-gray-400`}
                 onClick={() => {
                   setSelected({
                     transactionId: undefined,
@@ -319,7 +321,18 @@ export default function StatementDetailsPage() {
                   });
                 }}
               >
-                {invoice.title}
+                <div>
+                  {invoice.title}{" "}
+                  {invoice.category === "expense" ? (
+                    <span>({invoice.frequency})</span>
+                  ) : null}
+                </div>
+                {invoice.Transaction.length > 0 ? (
+                  <div className="text-xs">
+                    Last: {formatCurrency(invoice.Transaction[0].amount)} on{" "}
+                    {formatDate(invoice.Transaction[0].Statement.date)}
+                  </div>
+                ) : null}
               </button>
             );
           })}

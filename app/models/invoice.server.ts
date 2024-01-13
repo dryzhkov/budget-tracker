@@ -13,6 +13,26 @@ export function getInvoices(userId: User["id"], state?: string) {
       title: true,
       category: true,
       frequency: true,
+      Transaction: {
+        orderBy: {
+          Statement: {
+            date: "desc",
+          },
+        },
+        select: {
+          id: true,
+          amount: true,
+          createdAt: true,
+          Statement: {
+            select: {
+              id: true,
+              date: true,
+              year: true,
+            },
+          },
+        },
+        take: 1,
+      },
     },
   });
 }

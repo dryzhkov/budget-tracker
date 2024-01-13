@@ -76,7 +76,12 @@ export function validateEmail(email: unknown): email is string {
 }
 
 export function formatDate(input: string) {
-  return new Date(input).toISOString().split("T")[0];
+  return new Date(input).toLocaleDateString("en-US", {
+    timeZone: "UTC",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
