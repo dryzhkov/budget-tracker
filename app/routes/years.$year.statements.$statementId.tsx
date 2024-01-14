@@ -233,6 +233,8 @@ export default function StatementDetailsPage() {
     return <Spinner />;
   }
 
+  console.log("selected", selected);
+
   return (
     <div className="flex">
       <div className="max-w-sm min-w-96">
@@ -362,18 +364,18 @@ export default function StatementDetailsPage() {
                   min="0"
                   ref={amountRef}
                   className="mt-1 p-2 w-full border rounded-md"
-                  defaultValue={selected?.amount ?? 0}
+                  defaultValue={selected?.amount ?? undefined}
                 />
               </div>
               <input
                 type="hidden"
                 name="invoiceId"
-                value={selected?.invoice.id ?? ""}
+                defaultValue={selected?.invoice.id ?? undefined}
               />
               <input
                 type="hidden"
                 name="transactionId"
-                value={selected?.transactionId ?? undefined}
+                defaultValue={selected?.transactionId ?? undefined}
               />
 
               <button

@@ -28,16 +28,32 @@ export default function InvoiceListPage() {
       : invoice.category === "income"
       ? "green"
       : "yellow";
-  const classes = `rounded-full text-${bgColor}-500 border-${bgColor}-500 border-2 p-2`;
+
   return (
     <>
       <div className="mb-8">
         <h1 className="text-2xl font-semibold mb-4">Invoice Overview</h1>
         <div className="flex items-center space-x-4">
-          <div className={classes}>Title: {invoice.title}</div>
-          <div className={classes}>Category: {invoice.category}</div>
-          <div className={classes}>State: {invoice.state}</div>
-          <div className={classes}>Frequency: {invoice.frequency}</div>
+          <div
+            className={`rounded-full text-${bgColor}-500 border-${bgColor}-500 border-2 p-2`}
+          >
+            Title: {invoice.title}
+          </div>
+          <div
+            className={`rounded-full text-${bgColor}-500 border-${bgColor}-500 border-2 p-2`}
+          >
+            Category: {invoice.category}
+          </div>
+          <div
+            className={`rounded-full text-${bgColor}-500 border-${bgColor}-500 border-2 p-2`}
+          >
+            State: {invoice.state}
+          </div>
+          <div
+            className={`rounded-full text-${bgColor}-500 border-${bgColor}-500 border-2 p-2`}
+          >
+            Frequency: {invoice.frequency}
+          </div>
           <div className="rounded-full text-blue-500 border-blue-500 border-2 p-2">
             Total Transactions: {invoice.Transaction.length}
           </div>
