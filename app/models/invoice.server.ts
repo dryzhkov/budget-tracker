@@ -127,3 +127,18 @@ export function getInvoice({
     },
   });
 }
+
+export function getInvoiceByTitle({
+  title,
+  userId,
+}: Pick<Invoice, "title"> & { userId: User["id"] }) {
+  return prisma.invoice.findFirst({
+    where: {
+      title,
+      userId,
+    },
+    select: {
+      id: true,
+    },
+  });
+}

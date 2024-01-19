@@ -39,7 +39,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     throw new Response("Not Found", { status: 404 });
   }
 
-  const invoices = await getInvoices(userId);
+  const invoices = await getInvoices(userId, "active");
 
   return json({ statement, invoices });
 };
@@ -233,8 +233,6 @@ export default function StatementDetailsPage() {
     return <Spinner />;
   }
 
-  console.log("selected", selected);
-
   return (
     <div className="flex">
       <div className="max-w-sm min-w-96">
@@ -298,7 +296,7 @@ export default function StatementDetailsPage() {
         </Form>
       </div>
       <div className="ml-5">
-        <div className="flex space-x-4">
+        <div className="flex flex-row flex-wrap">
           {invoices.map((invoice) => {
             if (existingInvoices.has(invoice.id)) {
               return null;
@@ -313,7 +311,7 @@ export default function StatementDetailsPage() {
             return (
               <button
                 key={invoice.id}
-                className={`${bgColor} ${hoverBgColor} py-2 px-4 rounded text-gray-500 dark:text-gray-400`}
+                className={`${bgColor} ${hoverBgColor} py-2 px-4 mr-2 mt-2 rounded text-gray-500 dark:text-gray-400`}
                 onClick={() => {
                   setSelected({
                     transactionId: undefined,

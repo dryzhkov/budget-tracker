@@ -85,3 +85,18 @@ export function getStatementYears({ userId }: { userId: User["id"] }) {
     orderBy: { year: "desc" },
   });
 }
+
+export function findStatementByDate({
+  userId,
+  date,
+}: Pick<Statement, "date"> & { userId: User["id"] }) {
+  return prisma.statement.findFirst({
+    where: {
+      date,
+      userId,
+    },
+    select: {
+      id: true,
+    },
+  });
+}
