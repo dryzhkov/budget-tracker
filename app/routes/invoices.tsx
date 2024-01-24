@@ -18,8 +18,8 @@ export default function InvoicesPage() {
     <div className="flex h-full min-h-screen flex-col">
       <Header />
 
-      <main className="flex h-full bg-white">
-        <div className="h-full w-48 border-r bg-gray-50">
+      <main className="flex bg-white">
+        <div className="w-48 border-r bg-gray-50">
           <Link
             to="new"
             className="block p-4 text-md text-blue-500 hover:text-blue-600"
