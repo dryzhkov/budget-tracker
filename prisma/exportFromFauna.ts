@@ -12,8 +12,7 @@ invariant(
 
 const faunaGraphQLEndpoint = "https://graphql.us.fauna.com/graphql";
 
-interface Category {}
-async function getAllCategories(): Promise<Category[]> {
+async function getAllCategories(): Promise<unknown[]> {
   try {
     const response = await fetch(faunaGraphQLEndpoint, {
       method: "POST",
@@ -45,7 +44,7 @@ async function getAllCategories(): Promise<Category[]> {
       console.error(result.errors);
       throw new Error(result.errors[0]);
     } else {
-      return result.data.allCategories.data.map((item: any) => item);
+      return result.data.allCategories.data.map((item: unknown) => item);
     }
   } catch (error) {
     console.error("Error querying user data:", error);
@@ -101,7 +100,7 @@ async function getStatements(year: string): Promise<Statement[]> {
       console.error(result.errors);
       throw new Error(result.errors[0]);
     } else {
-      return result.data.statementsByYear.data.map((item: any) => item);
+      return result.data.statementsByYear.data.map((item: unknown) => item);
     }
   } catch (error) {
     console.error("Error querying user data:", error);
@@ -114,7 +113,7 @@ async function run() {
   let fileName = "categories.json";
   console.log("Exporting all categories to ", fileName);
 
-  function writeToJSON(filePath: string, data: any) {
+  function writeToJSON(filePath: string, data: unknown) {
     fs.writeFileSync(`backup/${filePath}`, JSON.stringify(data, null, 2), {
       encoding: "utf-8",
       flag: "w",
