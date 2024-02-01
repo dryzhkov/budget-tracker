@@ -1,5 +1,0 @@
-mutation UpdateCategory($id: ID!, $data: CategoryInput!) {
-  updateCategory(id: $id, data: $data) {
-    _id
-  }
-}
