@@ -2,6 +2,8 @@
 
 Personal budget tracker application
 
+Deployed to: https://fly.io/dashboard
+
 ## Development
 
 - Initial setup:
