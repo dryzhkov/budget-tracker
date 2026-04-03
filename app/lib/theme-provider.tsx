@@ -1,9 +1,10 @@
 import { createContext, useContext } from "react";
+
 import type { Theme } from "~/lib/theme.server";
 
-type ThemeContextType = {
+interface ThemeContextType {
   theme: Theme;
-};
+}
 
 const ThemeContext = createContext<ThemeContextType>({ theme: "light" });
 

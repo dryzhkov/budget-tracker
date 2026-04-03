@@ -16,12 +16,12 @@ export function SidebarLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-full min-h-screen flex-col">
+    <div className="flex h-screen flex-col">
       <Header onMenuClick={() => setSidebarOpen(true)} />
 
-      <div className="flex flex-1">
+      <div className="flex min-h-0 flex-1">
         {/* Desktop sidebar */}
-        <aside className="hidden w-64 flex-col border-r bg-card md:flex">
+        <aside className="hidden w-64 flex-col overflow-y-auto border-r bg-card md:flex">
           {sidebarContent}
         </aside>
 
@@ -47,6 +47,7 @@ export function SidebarLayout({
               </Button>
             </nav>
             <Separator />
+            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
             <div onClick={() => setSidebarOpen(false)}>
               {sidebarContent}
             </div>
@@ -54,7 +55,7 @@ export function SidebarLayout({
         </Sheet>
 
         {/* Main content */}
-        <main className="flex-1 overflow-auto p-4 md:p-6">{children}</main>
+        <main className="flex-1 overflow-y-scroll p-4 md:p-6">{children}</main>
       </div>
     </div>
   );

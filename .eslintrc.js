@@ -88,6 +88,15 @@ module.exports = {
       },
     },
 
+    // shadcn/ui generated components - disable rules that conflict with codegen
+    {
+      files: ["app/components/ui/**/*.{ts,tsx}"],
+      rules: {
+        "react/prop-types": "off",
+        "import/order": "off",
+      },
+    },
+
     // Markdown
     {
       files: ["**/*.md"],

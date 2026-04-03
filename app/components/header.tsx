@@ -9,7 +9,7 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const user = useOptionalUser();
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-card px-4 md:px-6">
+    <header className="sticky top-0 z-40 flex h-12 shrink-0 items-center gap-4 border-b bg-card px-4 md:px-6">
       {onMenuClick ? (
         <Button
           variant="ghost"
@@ -22,19 +22,19 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
         </Button>
       ) : null}
 
-      <h1 className="text-lg font-semibold">
+      <h1 className="text-sm font-semibold">
         <Link to="/">Budget Tracker</Link>
       </h1>
 
       {user ? (
         <>
-          <nav className="ml-4 hidden gap-2 md:flex">
-            <Button variant="ghost" asChild>
+          <nav className="ml-4 hidden gap-1 md:flex">
+            <Button variant="ghost" size="sm" asChild>
               <Link to={`/years/${new Date().getFullYear()}/statements`}>
                 Statements
               </Link>
             </Button>
-            <Button variant="ghost" asChild>
+            <Button variant="ghost" size="sm" asChild>
               <Link to="/invoices">Invoices</Link>
             </Button>
           </nav>
