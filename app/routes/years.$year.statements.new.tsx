@@ -3,6 +3,10 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import { createStatement } from "~/models/statement.server";
 import { requireUserId } from "~/session.server";
 
@@ -49,45 +53,36 @@ export default function NewStatementPage() {
   }, [actionData]);
 
   return (
-    <Form
-      method="post"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        width: "100%",
-      }}
-    >
-      <div>
-        <label className="flex w-full flex-col gap-1" htmlFor="datepicker">
-          <span>Select a date: </span>
-          <input
-            type="date"
-            id="datepicker"
-            name="date"
-            className="max-w-32"
-            ref={dateRef}
-            aria-invalid={actionData?.errors?.date ? true : undefined}
-            aria-errormessage={
-              actionData?.errors?.date ? "date-error" : undefined
-            }
-          />
-        </label>
-        {actionData?.errors?.date ? (
-          <div className="pt-1 text-red-700" id="title-error">
-            {actionData.errors.date}
+    <Card className="max-w-sm">
+      <CardHeader>
+        <CardTitle>New Statement</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form method="post" className="flex flex-col gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="datepicker">Select a date</Label>
+            <Input
+              type="date"
+              id="datepicker"
+              name="date"
+              ref={dateRef}
+              aria-invalid={actionData?.errors?.date ? true : undefined}
+              aria-errormessage={
+                actionData?.errors?.date ? "date-error" : undefined
+              }
+            />
+            {actionData?.errors?.date ? (
+              <p className="text-sm text-destructive" id="title-error">
+                {actionData.errors.date}
+              </p>
+            ) : null}
           </div>
-        ) : null}
-      </div>
 
-      <div className="text-right">
-        <button
-          type="submit"
-          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-        >
-          Save
-        </button>
-      </div>
-    </Form>
+          <div className="flex justify-end">
+            <Button type="submit">Save</Button>
+          </div>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }

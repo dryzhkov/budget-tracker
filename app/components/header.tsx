@@ -1,39 +1,61 @@
 import { Form, Link } from "@remix-run/react";
+import { Menu } from "lucide-react";
 
+import { ThemeToggle } from "~/components/theme-toggle";
+import { Button } from "~/components/ui/button";
 import { useOptionalUser } from "~/utils";
 
-export function Header() {
+export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const user = useOptionalUser();
 
   return (
-    <header className="flex items-center justify-between bg-slate-800 p-4 text-white">
-      <h1 className="text-2xl">Budget Tracker</h1>
+    <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-card px-4 md:px-6">
+      {onMenuClick ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          onClick={onMenuClick}
+        >
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle menu</span>
+        </Button>
+      ) : null}
+
+      <h1 className="text-lg font-semibold">
+        <Link to="/">Budget Tracker</Link>
+      </h1>
 
       {user ? (
         <>
-          <div>
-            <Link
-              to={`/years/${new Date().getFullYear()}/statements`}
-              className="hover:underline"
-            >
-              Statements
-            </Link>
-            {" | "}
-            <Link to={`/invoices`} className="hover:underline">
-              Invoices
-            </Link>
+          <nav className="ml-4 hidden gap-2 md:flex">
+            <Button variant="ghost" asChild>
+              <Link to={`/years/${new Date().getFullYear()}/statements`}>
+                Statements
+              </Link>
+            </Button>
+            <Button variant="ghost" asChild>
+              <Link to="/invoices">Invoices</Link>
+            </Button>
+          </nav>
+
+          <div className="ml-auto flex items-center gap-2">
+            <span className="hidden text-sm text-muted-foreground sm:inline">
+              {user.email}
+            </span>
+            <ThemeToggle />
+            <Form action="/logout" method="post">
+              <Button variant="outline" size="sm" type="submit">
+                Logout
+              </Button>
+            </Form>
           </div>
-          <Form action="/logout" method="post">
-            <span className="leading-10 mr-4">{user.email}</span>
-            <button
-              type="submit"
-              className="rounded bg-slate-600 px-4 py-2 text-blue-100 hover:bg-blue-500 active:bg-blue-600"
-            >
-              Logout
-            </button>
-          </Form>
         </>
-      ) : null}
+      ) : (
+        <div className="ml-auto">
+          <ThemeToggle />
+        </div>
+      )}
     </header>
   );
 }

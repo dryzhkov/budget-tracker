@@ -8,8 +8,11 @@ import {
   useNavigate,
   useParams,
 } from "@remix-run/react";
+import { Plus } from "lucide-react";
 
-import { Header } from "~/components/header";
+import { SidebarLayout } from "~/components/sidebar-layout";
+import { Button } from "~/components/ui/button";
+import { Separator } from "~/components/ui/separator";
 import { YearPicker } from "~/components/yearPicker";
 import {
   getStatementListItems,
@@ -41,52 +44,53 @@ export default function StatementsPage() {
     navigate(`/years/${year}/statements`);
   };
 
-  return (
-    <div className="flex h-full min-h-screen flex-col">
-      <Header />
-
-      <main className="flex bg-white">
-        <div className="w-48 border-r bg-gray-50">
-          <Link
-            to="new"
-            className="block p-4 text-md text-blue-500 hover:text-blue-600"
-          >
-            + New Statement
+  const sidebarContent = (
+    <div className="flex flex-col">
+      <div className="p-4">
+        <Button variant="ghost" className="w-full justify-start gap-2" asChild>
+          <Link to="new">
+            <Plus className="h-4 w-4" />
+            New Statement
           </Link>
-          <hr />
-          <div className="p-4">
-            <YearPicker
-              onYearChange={handleYearChange}
-              defaultValue={year ? Number(year) : new Date().getFullYear()}
-              years={years}
-            />
-          </div>
-          <hr />
+        </Button>
+      </div>
+      <Separator />
+      <div className="p-4">
+        <YearPicker
+          onYearChange={handleYearChange}
+          defaultValue={year ? Number(year) : new Date().getFullYear()}
+          years={years}
+        />
+      </div>
+      <Separator />
 
-          {statements.length === 0 ? (
-            <p className="p-4">No statements yet</p>
-          ) : (
-            <ol>
-              {statements.map((statement) => (
-                <li key={statement.id}>
-                  <NavLink
-                    className={({ isActive }) =>
-                      `block border-b p-4 text-md ${isActive ? "bg-white" : ""}`
-                    }
-                    to={statement.id.toString()}
-                  >
-                    📝 {formatDate(statement.date)}
-                  </NavLink>
-                </li>
-              ))}
-            </ol>
-          )}
-        </div>
-
-        <div className="flex-1 p-6">
-          <Outlet />
-        </div>
-      </main>
+      {statements.length === 0 ? (
+        <p className="p-4 text-sm text-muted-foreground">No statements yet</p>
+      ) : (
+        <nav className="flex flex-col">
+          {statements.map((statement) => (
+            <NavLink
+              key={statement.id}
+              className={({ isActive }) =>
+                `block border-b px-4 py-3 text-sm transition-colors hover:bg-accent ${
+                  isActive
+                    ? "bg-accent text-accent-foreground font-medium"
+                    : "text-muted-foreground"
+                }`
+              }
+              to={statement.id.toString()}
+            >
+              {formatDate(statement.date)}
+            </NavLink>
+          ))}
+        </nav>
+      )}
     </div>
+  );
+
+  return (
+    <SidebarLayout sidebarContent={sidebarContent}>
+      <Outlet />
+    </SidebarLayout>
   );
 }

@@ -1,3 +1,5 @@
+import { Label } from "~/components/ui/label";
+
 interface YearPickerProps {
   years: number[];
   onYearChange: (year: number) => void;
@@ -10,14 +12,12 @@ export function YearPicker({
   onYearChange,
 }: YearPickerProps) {
   return (
-    <>
-      <label htmlFor="years" className="mb-2 text-md font-medium text-gray-900">
-        Select a year:
-      </label>
+    <div className="space-y-2">
+      <Label htmlFor="years">Select a year</Label>
       <select
         id="years"
         defaultValue={defaultValue}
-        className="bg-gray-50 border border-gray-300 text-gray-900  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         onChange={(e) => onYearChange(Number(e.target.value))}
       >
         {years.map((year) => (
@@ -26,6 +26,6 @@ export function YearPicker({
           </option>
         ))}
       </select>
-    </>
+    </div>
   );
 }
