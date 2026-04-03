@@ -9,7 +9,7 @@ import {
   useNavigation,
   useRouteError,
 } from "@remix-run/react";
-import { Check, Trash2, X } from "lucide-react";
+import { Check, Plus, Trash2, X } from "lucide-react";
 import { useRef, useState } from "react";
 import invariant from "tiny-invariant";
 
@@ -252,68 +252,108 @@ function InlineEditRow({
   );
 }
 
-function InlineAddRow({
+function getNextDueDate(lastPaidDate: Date, frequency: string): Date | null {
+  const next = new Date(lastPaidDate);
+  switch (frequency) {
+    case "bi-weekly":
+      next.setDate(next.getDate() + 14);
+      return next;
+    case "monthly":
+      next.setMonth(next.getMonth() + 1);
+      return next;
+    case "bi-monthly":
+      next.setMonth(next.getMonth() + 2);
+      return next;
+    case "quaterly":
+      next.setMonth(next.getMonth() + 3);
+      return next;
+    case "one-off":
+      return null; // already paid, never due again
+    default:
+      return next;
+  }
+}
+
+interface UnassignedInvoice {
+  id: number;
+  title: string;
+  category: string;
+  frequency: string;
+  Transaction: { amount: string | number; Statement: { date: string } }[];
+}
+
+function isDueThisStatement(
+  invoice: UnassignedInvoice,
+  statementDate: string,
+): boolean {
+  const stmtDate = new Date(statementDate);
+  const lastTx = invoice.Transaction[0];
+
+  // Never paid before — it's due
+  if (!lastTx) return true;
+
+  // One-off that was already paid — not due
+  if (invoice.frequency === "one-off") return false;
+
+  const lastPaidDate = new Date(lastTx.Statement.date);
+  const nextDue = getNextDueDate(lastPaidDate, invoice.frequency);
+
+  // If we can't determine next due, assume due
+  if (!nextDue) return true;
+
+  return nextDue <= stmtDate;
+}
+
+function SuggestionRow({
   invoice,
   bgColor,
   darkBgColor,
 }: {
-  invoice: {
-    id: number;
-    title: string;
-    category: string;
-    frequency: string;
-    Transaction: { amount: string | number; Statement: { date: string } }[];
-  };
+  invoice: UnassignedInvoice;
   bgColor: string;
   darkBgColor: string;
 }) {
   const fetcher = useFetcher();
   const isSubmitting = fetcher.state !== "idle";
   const lastTx = invoice.Transaction[0];
+  const lastAmount = lastTx ? Number(lastTx.amount) : 0;
 
   return (
-    <fetcher.Form method="post" className="flex items-center gap-2 py-0.5">
-      <input type="hidden" name="invoiceId" value={invoice.id} />
-      <input type="hidden" name="intent" value="add" />
+    <div className="flex items-center gap-2 py-0.5">
       <span
         className={cn(
-          "inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium",
+          "inline-flex shrink-0 items-center rounded px-1.5 py-0.5 text-xs font-medium",
           bgColor,
           darkBgColor,
         )}
       >
         {invoice.title}
-        {invoice.category === "expense" ? (
-          <span className="ml-1 text-muted-foreground">
-            ({invoice.frequency})
-          </span>
-        ) : null}
       </span>
-      {lastTx ? (
-        <span className="hidden text-xs text-muted-foreground sm:inline">
-          last {formatCurrency(lastTx.amount)}
-        </span>
-      ) : null}
-      <div className="ml-auto flex items-center gap-1">
-        <Input
-          type="number"
-          name="amount"
-          step=".01"
-          min="0"
-          placeholder={lastTx ? String(Number(lastTx.amount)) : "0.00"}
-          className="h-7 w-24 text-right text-sm"
-        />
+      <span className="truncate text-xs text-muted-foreground">
+        {lastTx ? (
+          <>
+            {formatCurrency(lastTx.amount)} on{" "}
+            {formatDate(lastTx.Statement.date)}
+          </>
+        ) : (
+          "never paid"
+        )}
+      </span>
+      <fetcher.Form method="post" className="ml-auto shrink-0">
+        <input type="hidden" name="invoiceId" value={invoice.id} />
+        <input type="hidden" name="intent" value="add" />
+        <input type="hidden" name="amount" value={lastAmount} />
         <Button
           type="submit"
-          size="sm"
-          variant="secondary"
-          className="h-7 px-2 text-xs"
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
           disabled={isSubmitting}
         >
-          Add
+          <Plus className="h-4 w-4" />
         </Button>
-      </div>
-    </fetcher.Form>
+      </fetcher.Form>
+    </div>
   );
 }
 
@@ -344,14 +384,6 @@ export default function StatementDetailsPage() {
   if (navigation.state === "loading") {
     return <Spinner />;
   }
-
-  // Build unassigned invoices grouped by category
-  const getUnassignedByCategory = (category: string) => {
-    return invoices.filter(
-      (inv) =>
-        inv.category === category && !existingInvoices.has(inv.id),
-    );
-  };
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -413,37 +445,71 @@ export default function StatementDetailsPage() {
         </ol>
       )}
 
-      {/* Unassigned invoices - inline add */}
+      {/* Unassigned invoices - split into due and upcoming */}
       {(() => {
         const unassigned = invoices.filter(
           (inv) => !existingInvoices.has(inv.id),
         );
         if (unassigned.length === 0) return null;
 
+        const dueNow: typeof unassigned = [];
+        const upcoming: typeof unassigned = [];
+
+        for (const inv of unassigned) {
+          if (isDueThisStatement(inv, statement.date)) {
+            dueNow.push(inv);
+          } else {
+            upcoming.push(inv);
+          }
+        }
+
+        const getGroupColors = (category: string) => {
+          const item = groups.find(
+            (g) => g.group.toLowerCase() === category,
+          );
+          return {
+            bgColor: item?.bgColor ?? "",
+            darkBgColor: item?.darkBgColor ?? "",
+          };
+        };
+
+        const renderList = (items: typeof unassigned) =>
+          items.map((invoice) => {
+            const { bgColor, darkBgColor } = getGroupColors(invoice.category);
+            return (
+              <SuggestionRow
+                key={invoice.id}
+                invoice={invoice}
+                bgColor={bgColor}
+                darkBgColor={darkBgColor}
+              />
+            );
+          });
+
         return (
           <>
-            <Separator />
-            <div>
-              <h4 className="mb-2 text-sm font-semibold text-muted-foreground">
-                Add Transactions
-              </h4>
-              <div className="space-y-1">
-                {groups
-                  .filter((g) => g.group !== PageGroup.TOTAL)
-                  .flatMap((item) =>
-                    getUnassignedByCategory(item.group.toLowerCase()).map(
-                      (invoice) => (
-                        <InlineAddRow
-                          key={invoice.id}
-                          invoice={invoice}
-                          bgColor={item.bgColor}
-                          darkBgColor={item.darkBgColor}
-                        />
-                      ),
-                    ),
-                  )}
-              </div>
-            </div>
+            {dueNow.length > 0 ? (
+              <>
+                <Separator />
+                <div>
+                  <h4 className="mb-2 text-sm font-semibold">
+                    Due Now
+                  </h4>
+                  <div className="space-y-1">{renderList(dueNow)}</div>
+                </div>
+              </>
+            ) : null}
+            {upcoming.length > 0 ? (
+              <>
+                <Separator />
+                <div>
+                  <h4 className="mb-2 text-sm font-semibold text-muted-foreground">
+                    Due Later
+                  </h4>
+                  <div className="space-y-1">{renderList(upcoming)}</div>
+                </div>
+              </>
+            ) : null}
           </>
         );
       })()}
